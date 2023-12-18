@@ -2,9 +2,11 @@
 
 #include <chrono>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "SDL2/include/SDL.h"
+#include "SDL2/include/SDL_ttf.h"
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
@@ -19,6 +21,22 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
 
     //Disable VSYNC
     SDL_RenderSetVSync(pRenderer, 0);
+
+    //Load font for FPSs
+    if (TTF_Init() == -1) 
+    {
+        std::cerr << "SDL_ttf initialization failed: " << TTF_GetError() << std::endl;
+    }
+
+    pFont = TTF_OpenFont("ARCADECLASSIC.TTF", 24);
+
+    if (!pFont) 
+    {
+        std::cerr << "TTF_OpenFont error: " << TTF_GetError() << std::endl;
+    }
+
+    pFontSurface = TTF_RenderText_Solid(pFont, "0", textColor);
+    pFontTex = SDL_CreateTextureFromSurface(pRenderer, pFontSurface);
 }
 
 void PhysicsEngine::Run()
@@ -27,8 +45,12 @@ void PhysicsEngine::Run()
     SDL_Event event;
     bool quit = false;
 
-    //Get the starttime
+    //Get the start time
     auto startTime = std::chrono::high_resolution_clock::now();
+    auto currTime = startTime;
+    float delta = 0;
+
+    float fpsTimer = 0;
 
     //If quit is true exit the game loop
     while (!quit)
@@ -52,22 +74,22 @@ void PhysicsEngine::Run()
                 {
 					case SDLK_UP:
 					{
-                        yOffset -= elapsedSeconds * 100;
+                        yOffset -= physicsTimeStep * 100;
 						break;
 					}
                     case SDLK_DOWN:
                     {
-                        yOffset += elapsedSeconds * 100;
+                        yOffset += physicsTimeStep * 100;
                         break;
                     }
                     case SDLK_LEFT:
                     {
-                        xOffset -= elapsedSeconds * 100;
+                        xOffset -= physicsTimeStep * 100;
                         break;
                     }
                     case SDLK_RIGHT:
                     {
-                        xOffset += elapsedSeconds * 100;
+                        xOffset += physicsTimeStep * 100;
                         break;
                     }
                     default:
@@ -83,19 +105,36 @@ void PhysicsEngine::Run()
         Draw();
 
         //Calculate elapsed seconds
-        auto currTime = std::chrono::high_resolution_clock::now();
-        const auto delta = std::chrono::duration<float>(currTime - startTime).count();
+        currTime = std::chrono::high_resolution_clock::now();
+        delta = std::chrono::duration<float>(currTime - startTime).count();
 
         startTime = currTime;
         elapsedSeconds += delta;
 
-        //Print fps
-        std::cout << 1/elapsedSeconds << '\n';
+        fpsTimer += delta;
+
+        // Calculate average FPS every second
+        if (fpsTimer >= 1.f)
+        {
+            pFontSurface = TTF_RenderText_Solid(pFont, std::to_string(static_cast<int>(1/elapsedSeconds)).c_str(), textColor);
+            pFontTex = SDL_CreateTextureFromSurface(pRenderer, pFontSurface);
+
+            //Reset timer
+            fpsTimer = 0;
+        }
     }
 
-    //Delete the sdl window/renderer
+    //Delete fonts
+    SDL_FreeSurface(pFontSurface);
+    SDL_DestroyTexture(pFontTex);
+    TTF_CloseFont(pFont);
+
+    //Delete the SDL window/renderer
     SDL_DestroyRenderer(pRenderer);
     SDL_DestroyWindow(pWindow);
+
+    //QUit font and SDL
+    TTF_Quit();
     SDL_Quit();
 }
 
@@ -128,6 +167,10 @@ void PhysicsEngine::Draw() const
     }
 
     SDL_RenderDrawLinesF(pRenderer, points.data(), static_cast<int>(points.size()));
+
+    //Draw Font
+    const SDL_Rect textRect = { 10, 10, pFontSurface->w, pFontSurface->h };
+    SDL_RenderCopy(pRenderer, pFontTex, nullptr, &textRect);
 
     // Present the renderer
     SDL_RenderPresent(pRenderer);

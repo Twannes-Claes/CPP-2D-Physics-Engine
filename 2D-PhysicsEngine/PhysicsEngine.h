@@ -1,6 +1,11 @@
 #pragma once
+#include <SDL_pixels.h>
+#include <SDL_ttf.h>
+
 struct SDL_Window;
 struct SDL_Renderer;
+struct SDL_Surface;
+struct SDL_Texture;
 
 class PhysicsEngine
 {
@@ -25,7 +30,15 @@ private:
 	float xOffset = 0, yOffset = 0;
 
 	const float physicsTimeStep;
+
+	//FPS
 	float elapsedSeconds = 0;
+
+	const SDL_Color textColor = { 255, 255, 255, 255 };
+
+	SDL_Surface* pFontSurface = nullptr;
+	SDL_Texture* pFontTex = nullptr;
+	TTF_Font* pFont = nullptr;
 
 	void FixedUpdate();
 

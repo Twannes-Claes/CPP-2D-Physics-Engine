@@ -27,4 +27,9 @@
       <Filter>Engine Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="ARCADECLASSIC.TTF">
+      <Filter>Resource Files</Filter>
+    </Font>
+  </ItemGroup>
 </Project>
