@@ -30,6 +30,5 @@ private:
 	void FixedUpdate();
 
 	void Draw() const;
-
 };
 

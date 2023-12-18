@@ -7,6 +7,7 @@
 #include "SDL2/include/SDL.h"
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
+//Initialize the physicsTimeStep
 :physicsTimeStep(physicsTimeStep)
 {
     //Initialize SDL
@@ -16,19 +17,23 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     pWindow = SDL_CreateWindow("TwannesClaes-Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, 0);
     pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
 
+    //Disable VSYNC
     SDL_RenderSetVSync(pRenderer, 0);
 }
 
 void PhysicsEngine::Run()
 {
+    //Variables needed for update loop, reference for SDL input and condition if loop has ended
     SDL_Event event;
     bool quit = false;
 
+    //Get the starttime
     auto startTime = std::chrono::high_resolution_clock::now();
 
+    //If quit is true exit the game loop
     while (!quit)
     {
-        //Get input
+        //Get SDL events
         while (SDL_PollEvent(&event) != 0)
         {
             //Get if the window closes
@@ -36,6 +41,7 @@ void PhysicsEngine::Run()
             {
                 quit = true;
             }
+            //Register if a key is down
             if(event.type == SDL_KEYDOWN)
             {
 	            const SDL_Keycode key = event.key.keysym.sym;
@@ -83,9 +89,11 @@ void PhysicsEngine::Run()
         startTime = currTime;
         elapsedSeconds += delta;
 
+        //Print fps
         std::cout << 1/elapsedSeconds << '\n';
     }
 
+    //Delete the sdl window/renderer
     SDL_DestroyRenderer(pRenderer);
     SDL_DestroyWindow(pWindow);
     SDL_Quit();
