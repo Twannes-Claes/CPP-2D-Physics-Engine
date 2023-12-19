@@ -6,38 +6,26 @@
 #include <vector>
 
 #include "SDL2/include/SDL.h"
-#include "SDL2/include/SDL_ttf.h"
+#include "Font.h"
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
-:physicsTimeStep(physicsTimeStep)
+:m_PhysicsTimeStep(physicsTimeStep)
 {
     //Initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
 
     //Create the window
-    pWindow = SDL_CreateWindow("TwannesClaes-Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, 0);
-    pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
+    m_pWindow = SDL_CreateWindow("TwannesClaes-Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, 0);
+    m_pRenderer = SDL_CreateRenderer(m_pWindow, -1, SDL_RENDERER_ACCELERATED);
 
     //Disable VSYNC
-    SDL_RenderSetVSync(pRenderer, 0);
+    SDL_RenderSetVSync(m_pRenderer, 0);
 
-    //Load font for FPSs
-    if (TTF_Init() == -1) 
-    {
-        std::cerr << "SDL_ttf initialization failed: " << TTF_GetError() << std::endl;
-    }
-
-    pFont = TTF_OpenFont("ARCADECLASSIC.TTF", 24);
-
-    if (!pFont) 
-    {
-        std::cerr << "TTF_OpenFont error: " << TTF_GetError() << std::endl;
-    }
-
-    pFontSurface = TTF_RenderText_Solid(pFont, "0", textColor);
-    pFontTex = SDL_CreateTextureFromSurface(pRenderer, pFontSurface);
+    m_FontFPS = std::make_unique<Font>("ARCADECLASSIC.TTF", 24, SDL_Color{ 255, 255, 255, 255 }, 10, 10, m_pRenderer);
 }
+
+PhysicsEngine::~PhysicsEngine() = default;
 
 void PhysicsEngine::Run()
 {
@@ -56,47 +44,47 @@ void PhysicsEngine::Run()
     while (!quit)
     {
         //Get SDL events
-        while (SDL_PollEvent(&event) != 0)
-        {
-            //Get if the window closes
-            if (event.type == SDL_QUIT)
-            {
-                quit = true;
-            }
-            //Register if a key is down
-            if(event.type == SDL_KEYDOWN)
-            {
-	            const SDL_Keycode key = event.key.keysym.sym;
-
-                if (key == SDLK_ESCAPE) quit = true;
-
-                switch(key)
-                {
+       while (SDL_PollEvent(&event) != 0)
+       {
+           //Get if the window closes
+           if (event.type == SDL_QUIT)
+           {
+               quit = true;
+           }
+           //Register if a key is down
+           if(event.type == SDL_KEYDOWN)
+           {
+	           const SDL_Keycode key = event.key.keysym.sym;
+       
+               if (key == SDLK_ESCAPE) quit = true;
+       
+               switch(key)
+               {
 					case SDLK_UP:
 					{
-                        yOffset -= physicsTimeStep * 100;
+                      yOffset -= m_PhysicsTimeStep * 100;
 						break;
 					}
-                    case SDLK_DOWN:
-                    {
-                        yOffset += physicsTimeStep * 100;
-                        break;
-                    }
-                    case SDLK_LEFT:
-                    {
-                        xOffset -= physicsTimeStep * 100;
-                        break;
-                    }
-                    case SDLK_RIGHT:
-                    {
-                        xOffset += physicsTimeStep * 100;
-                        break;
-                    }
-                    default:
-                        break;
-                }
-            }
-        }
+                   case SDLK_DOWN:
+                   {
+                       yOffset += m_PhysicsTimeStep * 100;
+                       break;
+                   }
+                   case SDLK_LEFT:
+                   {
+                       xOffset -= m_PhysicsTimeStep * 100;
+                       break;
+                   }
+                   case SDLK_RIGHT:
+                   {
+                       xOffset += m_PhysicsTimeStep * 100;
+                       break;
+                   }
+                   default:
+                       break;
+               }
+           }
+       }
 
         //Fixed update loop
         FixedUpdate();
@@ -109,55 +97,51 @@ void PhysicsEngine::Run()
         delta = std::chrono::duration<float>(currTime - startTime).count();
 
         startTime = currTime;
-        elapsedSeconds += delta;
+        m_DeltaTime = delta;
+        m_DeltaLag += delta;
 
         fpsTimer += delta;
+        ++m_FrameCount;
 
         // Calculate average FPS every second
         if (fpsTimer >= 1.f)
         {
-            pFontSurface = TTF_RenderText_Solid(pFont, std::to_string(static_cast<int>(1/elapsedSeconds)).c_str(), textColor);
-            pFontTex = SDL_CreateTextureFromSurface(pRenderer, pFontSurface);
+            m_FontFPS->SetText(std::to_string(static_cast<int>(m_FrameCount/ fpsTimer)).c_str());
 
             //Reset timer
+            m_FrameCount = 0;
             fpsTimer = 0;
         }
     }
 
-    //Delete fonts
-    SDL_FreeSurface(pFontSurface);
-    SDL_DestroyTexture(pFontTex);
-    TTF_CloseFont(pFont);
-
     //Delete the SDL window/renderer
-    SDL_DestroyRenderer(pRenderer);
-    SDL_DestroyWindow(pWindow);
+    SDL_DestroyRenderer(m_pRenderer);
+    SDL_DestroyWindow(m_pWindow);
 
-    //QUit font and SDL
-    TTF_Quit();
+    //Quit SDL
     SDL_Quit();
 }
 
 void PhysicsEngine::FixedUpdate()
 {
     //Fixed update loop that checks for missed timesteps
-    while (elapsedSeconds >= physicsTimeStep)
+    while (m_DeltaLag >= m_PhysicsTimeStep)
     {
         //Update objects
         //pObject.Update(physicsTimeStep);
 
-        elapsedSeconds -= physicsTimeStep;
+        m_DeltaLag -= m_PhysicsTimeStep;
     }
 }
 
 void PhysicsEngine::Draw() const
 {
     //Clear render buffer
-    SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 0);
-    SDL_RenderClear(pRenderer);
+    SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 0, 0);
+    SDL_RenderClear(m_pRenderer);
 
     //Test to draw triangles
-    SDL_SetRenderDrawColor(pRenderer, 0, 0, 255, 255);
+    SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
     std::vector<SDL_FPoint> points = { {100, 100}, {200, 100}, {150, 200}, {100, 100} };
     
     for (SDL_FPoint& point : points)
@@ -166,12 +150,11 @@ void PhysicsEngine::Draw() const
         point.y += yOffset;
     }
 
-    SDL_RenderDrawLinesF(pRenderer, points.data(), static_cast<int>(points.size()));
+    SDL_RenderDrawLinesF(m_pRenderer, points.data(), static_cast<int>(points.size()));
+    //
 
-    //Draw Font
-    const SDL_Rect textRect = { 10, 10, pFontSurface->w, pFontSurface->h };
-    SDL_RenderCopy(pRenderer, pFontTex, nullptr, &textRect);
+    m_FontFPS->Draw();
 
-    // Present the renderer
-    SDL_RenderPresent(pRenderer);
+    //Push the buffer
+    SDL_RenderPresent(m_pRenderer);
 }
