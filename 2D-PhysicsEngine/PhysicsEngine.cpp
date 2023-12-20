@@ -25,6 +25,7 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     m_FontFPS = std::make_unique<Font>("ARCADECLASSIC.TTF", 24, SDL_Color{ 255, 255, 255, 255 }, 10, 10, m_pRenderer);
 }
 
+//Default assignment is needed in CPP for unique pointers
 PhysicsEngine::~PhysicsEngine() = default;
 
 void PhysicsEngine::Run()
@@ -124,6 +125,9 @@ void PhysicsEngine::Run()
 
 void PhysicsEngine::FixedUpdate()
 {
+    //Set a max amount of times the FixedUpdate can be called in a single frame
+    if (m_DeltaLag > 0.2f) m_DeltaLag = 0.2f;
+
     //Fixed update loop that checks for missed timesteps
     while (m_DeltaLag >= m_PhysicsTimeStep)
     {
@@ -140,6 +144,10 @@ void PhysicsEngine::Draw() const
     SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 0, 0);
     SDL_RenderClear(m_pRenderer);
 
+    //Setup linear interpolation for drawing between 2 frames
+    //This is for a smoothed transition
+    //object.previous* a + object.curr * (1.f - a);
+
     //Test to draw triangles
     SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
     std::vector<SDL_FPoint> points = { {100, 100}, {200, 100}, {150, 200}, {100, 100} };
@@ -149,9 +157,8 @@ void PhysicsEngine::Draw() const
         point.x += xOffset;
         point.y += yOffset;
     }
-
+    
     SDL_RenderDrawLinesF(m_pRenderer, points.data(), static_cast<int>(points.size()));
-    //
 
     m_FontFPS->Draw();
 

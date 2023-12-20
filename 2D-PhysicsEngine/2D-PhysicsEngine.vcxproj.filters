@@ -32,6 +32,9 @@
     <ClInclude Include="Font.h">
       <Filter>Game Files</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsData.h">
+      <Filter>Game Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Font Include="ARCADECLASSIC.TTF">

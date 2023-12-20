@@ -33,8 +33,9 @@ private:
 	std::unique_ptr<Font> m_FontFPS;
 
 	//Physics Settings
-	const float m_PhysicsTimeStep;
+	const float m_MaxDeltaLag = 0.2f;
 	const float m_Gravity = -9.81f;
+	const float m_PhysicsTimeStep;
 
 	//FPS
 	float m_DeltaTime = 0;
