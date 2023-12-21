@@ -29,10 +29,7 @@ private:
 	SDL_Window* m_pWindow = nullptr;
 	SDL_Renderer* m_pRenderer = nullptr;
 
-	std::vector<std::unique_ptr<RigidBody>> RigidBodys;
-
-	//Other variables
-	float xOffset = 0, yOffset = 0;
+	std::vector<std::unique_ptr<RigidBody>> m_RigidBodys;
 
 	std::unique_ptr<Font> m_FontFPS;
 

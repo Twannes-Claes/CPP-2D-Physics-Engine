@@ -25,8 +25,8 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
 
     m_FontFPS = std::make_unique<Font>("ARCADECLASSIC.TTF", 24, SDL_Color{ 255, 255, 255, 255 }, 10, 10, m_pRenderer);
 
-    RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
-    RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -60,11 +60,9 @@ void PhysicsEngine::Run()
 		       }
                case SDL_KEYDOWN:
                {
-                   const SDL_Keycode key = event.key.keysym.sym;
-
-                   switch (key)
+	               switch (const SDL_Keycode key = event.key.keysym.sym)
                    {
-                        case SDL_QUIT:
+                        case SDLK_ESCAPE:
 	                    {
                         	   quit = true;
                         	   break;
@@ -101,6 +99,8 @@ void PhysicsEngine::Run()
 
                    int x{}, y{};
                    SDL_GetMouseState(&x, &y);
+
+                   std::cout << "Clicked left mouse button: " << x << "/" << y << '\n';
 
                    break;
 		       }
@@ -156,9 +156,7 @@ void PhysicsEngine::FixedUpdate()
     while (m_DeltaLag >= m_PhysicsTimeStep)
     {
         //Update objects
-        //pObject.Update(physicsTimeStep);
-
-        for (const auto& body : RigidBodys)
+        for (const auto& body : m_RigidBodys)
         {
             //Wind
             //part->AddForce(glm::vec2(m_PixelsPerMeter * 2.f, 0));
@@ -166,16 +164,13 @@ void PhysicsEngine::FixedUpdate()
             body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->mass));
         }
 
-        for (const auto& body : RigidBodys)
+        for (const auto& body : m_RigidBodys)
         {
-            
             //Update
             body->Update(m_PhysicsTimeStep);
-
-            
         }
 
-        for (const auto& body : RigidBodys)
+        for (const auto& body : m_RigidBodys)
         {
             if (body->pos.y >= 600 || body->pos.y <= 0)
             {
@@ -207,26 +202,15 @@ void PhysicsEngine::Draw() const
     //This is for a smoothed transition
     //object.previous* a + object.curr * (1.f - a);
 
-    ////Test to draw triangles
-    //SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
-    //std::vector<SDL_FPoint> points = { {100, 100}, {200, 100}, {150, 200}, {100, 100} };
-    //
-    //for (SDL_FPoint& point : points)
-    //{
-    //    point.x += xOffset;
-    //    point.y += yOffset;
-    //}
-    //
-    //SDL_RenderDrawLinesF(m_pRenderer, points.data(), static_cast<int>(points.size()));
-
     SDL_SetRenderDrawColor(m_pRenderer, 10, 10, 255, 200);
     constexpr SDL_FRect rect{ 0, 300, 800, 300 };
     SDL_RenderFillRectF(m_pRenderer, &rect);
 
     SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
 
-    for (const auto& body : RigidBodys)
+    for (const auto& body : m_RigidBodys)
     {
+        body->Draw(m_pRenderer);
         SDL_RenderDrawPointF(m_pRenderer, body->pos.x, body->pos.y);
     }
 
