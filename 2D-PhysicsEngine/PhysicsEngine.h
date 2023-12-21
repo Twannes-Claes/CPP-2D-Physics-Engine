@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-class Particle;
+class RigidBody;
 class Font;
 
 struct SDL_Window;
@@ -29,7 +29,7 @@ private:
 	SDL_Window* m_pWindow = nullptr;
 	SDL_Renderer* m_pRenderer = nullptr;
 
-	std::vector<std::unique_ptr<Particle>> particles;
+	std::vector<std::unique_ptr<RigidBody>> RigidBodys;
 
 	//Other variables
 	float xOffset = 0, yOffset = 0;

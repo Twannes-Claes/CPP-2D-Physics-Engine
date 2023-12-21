@@ -7,7 +7,7 @@
 
 #include "SDL2/include/SDL.h"
 #include "Font.h"
-#include "Particle.h"
+#include "RigidBody.h"
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
@@ -25,8 +25,8 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
 
     m_FontFPS = std::make_unique<Font>("ARCADECLASSIC.TTF", 24, SDL_Color{ 255, 255, 255, 255 }, 10, 10, m_pRenderer);
 
-    particles.push_back(std::make_unique<Particle>(100.f, 100.f, 1.f));
-    particles.push_back(std::make_unique<Particle>(110.f, 100.f, 2.5f));
+    RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
+    RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -51,44 +51,64 @@ void PhysicsEngine::Run()
         //Get SDL events
        while (SDL_PollEvent(&event) != 0)
        {
-           //Get if the window closes
-           if (event.type == SDL_QUIT)
-           {
-               quit = true;
-           }
-           //Register if a key is down
-           if(event.type == SDL_KEYDOWN)
-           {
-	           const SDL_Keycode key = event.key.keysym.sym;
-       
-               if (key == SDLK_ESCAPE) quit = true;
-       
-     //          switch(key)
-     //          {
-					//case SDLK_UP:
-					//{
-     //                 yOffset -= m_PhysicsTimeStep * 100;
-					//	break;
-					//}
-     //              case SDLK_DOWN:
-     //              {
-     //                  yOffset += m_PhysicsTimeStep * 100;
-     //                  break;
-     //              }
-     //              case SDLK_LEFT:
-     //              {
-     //                  xOffset -= m_PhysicsTimeStep * 100;
-     //                  break;
-     //              }
-     //              case SDLK_RIGHT:
-     //              {
-     //                  xOffset += m_PhysicsTimeStep * 100;
-     //                  break;
-     //              }
-     //              default:
-     //                  break;
-     //          }
-           }
+	       switch(event.type)
+	       {
+	           case SDL_QUIT:
+		       {
+	           	  quit = true;
+	           	  break;
+		       }
+               case SDL_KEYDOWN:
+               {
+                   const SDL_Keycode key = event.key.keysym.sym;
+
+                   switch (key)
+                   {
+                        case SDL_QUIT:
+	                    {
+                        	   quit = true;
+                        	   break;
+	                    }
+                        //case SDLK_UP:
+                        //{
+                        //    yOffset -= m_PhysicsTimeStep * 100;
+                        //    break;
+                        //}
+                        //case SDLK_DOWN:
+                        //{
+                        //    yOffset += m_PhysicsTimeStep * 100;
+                        //    break;
+                        //}
+                        //case SDLK_LEFT:
+                        //{
+                        //    xOffset -= m_PhysicsTimeStep * 100;
+                        //    break;
+                        //}
+                        //case SDLK_RIGHT:
+                        //{
+                        //    xOffset += m_PhysicsTimeStep * 100;
+                        //    break;
+                        //}
+                        default:
+                            break;
+                   }
+	           	   break;
+               }
+	           case SDL_MOUSEBUTTONDOWN:
+		       {
+                    //Setup for mouse movement to spawn objects
+                   if (event.button.button == !SDL_BUTTON_LEFT) break;
+
+                   int x{}, y{};
+                   SDL_GetMouseState(&x, &y);
+
+                   break;
+		       }
+               default:
+               {
+                   break;
+               }
+	       }
        }
 
         //Fixed update loop
@@ -138,11 +158,39 @@ void PhysicsEngine::FixedUpdate()
         //Update objects
         //pObject.Update(physicsTimeStep);
 
-        for (const auto& part : particles)
+        for (const auto& body : RigidBodys)
         {
-            part->AddForce(glm::vec2(m_PixelsPerMeter * 2.f, 0));
-            part->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * part->mass));
-            part->Update(m_PhysicsTimeStep);
+            //Wind
+            //part->AddForce(glm::vec2(m_PixelsPerMeter * 2.f, 0));
+            //Gravity
+            body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->mass));
+        }
+
+        for (const auto& body : RigidBodys)
+        {
+            
+            //Update
+            body->Update(m_PhysicsTimeStep);
+
+            
+        }
+
+        for (const auto& body : RigidBodys)
+        {
+            if (body->pos.y >= 600 || body->pos.y <= 0)
+            {
+                body->v.y *= -1;
+            }
+            if (body->pos.x <= 0 || body->pos.x >= 800)
+            {
+                body->v.x *= -1;
+            }
+
+            if (body->pos.y >= 300)
+            {
+                body->GenerateDrag(0.03f);
+                body->AddForce(glm::vec2{ 0, -1000.f });
+            }
         }
 
         m_DeltaLag -= m_PhysicsTimeStep;
@@ -171,11 +219,15 @@ void PhysicsEngine::Draw() const
     //
     //SDL_RenderDrawLinesF(m_pRenderer, points.data(), static_cast<int>(points.size()));
 
+    SDL_SetRenderDrawColor(m_pRenderer, 10, 10, 255, 200);
+    constexpr SDL_FRect rect{ 0, 300, 800, 300 };
+    SDL_RenderFillRectF(m_pRenderer, &rect);
+
     SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
 
-    for (const auto& part : particles)
+    for (const auto& body : RigidBodys)
     {
-        SDL_RenderDrawPointF(m_pRenderer, part->pos.x, part->pos.y);
+        SDL_RenderDrawPointF(m_pRenderer, body->pos.x, body->pos.y);
     }
 
     m_FontFPS->Draw();

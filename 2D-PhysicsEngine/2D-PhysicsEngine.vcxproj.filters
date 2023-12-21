@@ -27,9 +27,6 @@
     <ClCompile Include="RigidBody.cpp">
       <Filter>Game Files</Filter>
     </ClCompile>
-    <ClCompile Include="Particle.cpp">
-      <Filter>Game Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PhysicsEngine.h">
@@ -39,9 +36,6 @@
       <Filter>Game Files</Filter>
     </ClInclude>
     <ClInclude Include="RigidBody.h">
-      <Filter>Game Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Particle.h">
       <Filter>Game Files</Filter>
     </ClInclude>
   </ItemGroup>

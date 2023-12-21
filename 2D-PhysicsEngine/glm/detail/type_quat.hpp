@@ -40,6 +40,7 @@ namespace glm
 #		endif
 
 #		if GLM_LANG & GLM_LANG_CXXMS_FLAG
+
 			union
 			{
 #				ifdef GLM_FORCE_QUAT_DATA_WXYZ
