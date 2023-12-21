@@ -7,6 +7,7 @@
 
 #include "SDL2/include/SDL.h"
 #include "Font.h"
+#include "Particle.h"
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
@@ -23,6 +24,9 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     SDL_RenderSetVSync(m_pRenderer, 0);
 
     m_FontFPS = std::make_unique<Font>("ARCADECLASSIC.TTF", 24, SDL_Color{ 255, 255, 255, 255 }, 10, 10, m_pRenderer);
+
+    particles.push_back(std::make_unique<Particle>(100.f, 100.f, 1.f));
+    particles.push_back(std::make_unique<Particle>(110.f, 100.f, 2.5f));
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -59,31 +63,31 @@ void PhysicsEngine::Run()
        
                if (key == SDLK_ESCAPE) quit = true;
        
-               switch(key)
-               {
-					case SDLK_UP:
-					{
-                      yOffset -= m_PhysicsTimeStep * 100;
-						break;
-					}
-                   case SDLK_DOWN:
-                   {
-                       yOffset += m_PhysicsTimeStep * 100;
-                       break;
-                   }
-                   case SDLK_LEFT:
-                   {
-                       xOffset -= m_PhysicsTimeStep * 100;
-                       break;
-                   }
-                   case SDLK_RIGHT:
-                   {
-                       xOffset += m_PhysicsTimeStep * 100;
-                       break;
-                   }
-                   default:
-                       break;
-               }
+     //          switch(key)
+     //          {
+					//case SDLK_UP:
+					//{
+     //                 yOffset -= m_PhysicsTimeStep * 100;
+					//	break;
+					//}
+     //              case SDLK_DOWN:
+     //              {
+     //                  yOffset += m_PhysicsTimeStep * 100;
+     //                  break;
+     //              }
+     //              case SDLK_LEFT:
+     //              {
+     //                  xOffset -= m_PhysicsTimeStep * 100;
+     //                  break;
+     //              }
+     //              case SDLK_RIGHT:
+     //              {
+     //                  xOffset += m_PhysicsTimeStep * 100;
+     //                  break;
+     //              }
+     //              default:
+     //                  break;
+     //          }
            }
        }
 
@@ -126,13 +130,20 @@ void PhysicsEngine::Run()
 void PhysicsEngine::FixedUpdate()
 {
     //Set a max amount of times the FixedUpdate can be called in a single frame
-    if (m_DeltaLag > 0.2f) m_DeltaLag = 0.2f;
+    if (m_DeltaLag > m_MaxDeltaLag) m_DeltaLag = m_MaxDeltaLag;
 
     //Fixed update loop that checks for missed timesteps
     while (m_DeltaLag >= m_PhysicsTimeStep)
     {
         //Update objects
         //pObject.Update(physicsTimeStep);
+
+        for (const auto& part : particles)
+        {
+            part->AddForce(glm::vec2(m_PixelsPerMeter * 2.f, 0));
+            part->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * part->mass));
+            part->Update(m_PhysicsTimeStep);
+        }
 
         m_DeltaLag -= m_PhysicsTimeStep;
     }
@@ -148,17 +159,24 @@ void PhysicsEngine::Draw() const
     //This is for a smoothed transition
     //object.previous* a + object.curr * (1.f - a);
 
-    //Test to draw triangles
-    SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
-    std::vector<SDL_FPoint> points = { {100, 100}, {200, 100}, {150, 200}, {100, 100} };
-    
-    for (SDL_FPoint& point : points)
+    ////Test to draw triangles
+    //SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
+    //std::vector<SDL_FPoint> points = { {100, 100}, {200, 100}, {150, 200}, {100, 100} };
+    //
+    //for (SDL_FPoint& point : points)
+    //{
+    //    point.x += xOffset;
+    //    point.y += yOffset;
+    //}
+    //
+    //SDL_RenderDrawLinesF(m_pRenderer, points.data(), static_cast<int>(points.size()));
+
+    SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
+
+    for (const auto& part : particles)
     {
-        point.x += xOffset;
-        point.y += yOffset;
+        SDL_RenderDrawPointF(m_pRenderer, part->pos.x, part->pos.y);
     }
-    
-    SDL_RenderDrawLinesF(m_pRenderer, points.data(), static_cast<int>(points.size()));
 
     m_FontFPS->Draw();
 

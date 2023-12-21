@@ -161,12 +161,15 @@ copy "$(SolutionDir)SDL2\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
   <ItemGroup>
     <ClCompile Include="2D-PhysicsEngine.cpp" />
     <ClCompile Include="Font.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Font.h" />
-    <ClInclude Include="PhysicsData.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="PhysicsEngine.h" />
+    <ClInclude Include="RigidBody.h" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="ARCADECLASSIC.TTF" />

@@ -24,6 +24,12 @@
     <ClCompile Include="Font.cpp">
       <Filter>Game Files</Filter>
     </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Game Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Game Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PhysicsEngine.h">
@@ -32,7 +38,10 @@
     <ClInclude Include="Font.h">
       <Filter>Game Files</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsData.h">
+    <ClInclude Include="RigidBody.h">
+      <Filter>Game Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
       <Filter>Game Files</Filter>
     </ClInclude>
   </ItemGroup>

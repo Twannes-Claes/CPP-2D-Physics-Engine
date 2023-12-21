@@ -1,7 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
+class Particle;
 class Font;
 
 struct SDL_Window;
@@ -27,14 +29,17 @@ private:
 	SDL_Window* m_pWindow = nullptr;
 	SDL_Renderer* m_pRenderer = nullptr;
 
+	std::vector<std::unique_ptr<Particle>> particles;
+
 	//Other variables
 	float xOffset = 0, yOffset = 0;
 
 	std::unique_ptr<Font> m_FontFPS;
 
 	//Physics Settings
+	const float m_PixelsPerMeter = 25;
 	const float m_MaxDeltaLag = 0.2f;
-	const float m_Gravity = -9.81f;
+	const float m_Gravity = 9.81f;
 	const float m_PhysicsTimeStep;
 
 	//FPS
