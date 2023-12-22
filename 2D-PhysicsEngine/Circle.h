@@ -19,11 +19,18 @@ public:
 
 private:
 
-	int DrawLine(SDL_Renderer* renderer, const float x1, const float x2, const float y) const;
-	int DrawPoint(SDL_Renderer* renderer, const float x, const float y) const;
-
-	int DrawCircle(SDL_Renderer* renderer, float x, float y, int rx, int ry) const;
+	//int DrawLine(SDL_Renderer* renderer, const float x1, const float x2, const float y) const;
+	//int DrawPoint(SDL_Renderer* renderer, const float x, const float y) const;
+	//
+	//int DrawCircle(SDL_Renderer* renderer, float x, float y, int rx, int ry) const;
 
 	float m_Radius{};
+	int m_AmountVertices{24};
+	float m_AngleBetweenVertices{};
+
+	glm::vec2 xy1{};
+	glm::vec2 xy2{};
+	glm::vec2 angles{};
+
 };
 
