@@ -10,7 +10,7 @@ class Polygon final : public Shape
 {
 public:
 
-	explicit Polygon(std::vector<glm::vec2> vertices);
+	explicit Polygon(std::vector<SDL_FPoint> vertices);
 	virtual ~Polygon() override = default;
 
 	virtual Type GetType()  const override { return Type::Polygon; }
@@ -24,7 +24,8 @@ public:
 
 private:
 
-	const std::vector<glm::vec2> m_Vertices{};
+	const std::vector<SDL_FPoint> m_Vertices{};
+	std::vector<SDL_FPoint> m_TransformedPoints{};
 
 };
 

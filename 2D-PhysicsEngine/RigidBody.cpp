@@ -43,7 +43,9 @@ void RigidBody::AddForce(const glm::vec2& force)
 void RigidBody::GenerateDrag(const float dragCoefficient)
 {
 	//Fd = k * ||v||^2 * -Vn
-	AddForce(dragCoefficient * glm::length2(v) * glm::normalize(v * -1.f));
+	const float length2 = glm::length2(v);
+
+	if(length2 > 0) AddForce(dragCoefficient * length2 * glm::normalize(v * -1.f));
 }
 
 void RigidBody::GenerateFriction(const float frictionCoefficient)

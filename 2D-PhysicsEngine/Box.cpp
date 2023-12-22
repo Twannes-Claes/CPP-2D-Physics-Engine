@@ -18,8 +18,8 @@ std::unique_ptr<Shape> Box::Clone() const
 
 void Box::DrawShape(SDL_Renderer* pRenderer, const glm::vec2& pos)
 {
-	m_Rect.x = pos.x;
-	m_Rect.y = pos.y;
+	m_Rect.x = pos.x - (m_Dimensions.x / 2);
+	m_Rect.y = pos.y - (m_Dimensions.y / 2);
 
-	SDL_RenderFillRectF(pRenderer, &m_Rect);
+	SDL_RenderDrawRectF(pRenderer, &m_Rect);
 }

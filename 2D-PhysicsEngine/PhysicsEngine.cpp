@@ -9,7 +9,9 @@
 #include "Circle.h"
 #include "SDL2/include/SDL.h"
 #include "Font.h"
+#include "Polygon.h"
 #include "RigidBody.h"
+#include "glm/geometric.hpp"
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
@@ -30,8 +32,16 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
 
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(10.f, 10.f),150.f, 100.f, 10.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(100.f), 250.f, 100.f, 10.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 100.f),150.f, 100.f, 10.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(100.f), 250.f, 100.f, 10.f));
+    //
+    //std::vector<SDL_FPoint> points;
+    //points.push_back(SDL_FPoint{ -50.f,-50.f });
+    //points.push_back(SDL_FPoint{ 50.f,-50.f });
+    //points.push_back(SDL_FPoint{ 0.f,50.f });
+    //points.push_back(SDL_FPoint{ -50.f,-50.f });
+    //
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 400.f, 100.f, 1.f));
 
 }
 
@@ -165,9 +175,12 @@ void PhysicsEngine::FixedUpdate()
         for (const auto& body : m_RigidBodys)
         {
             //Wind
-            body->AddForce(glm::vec2(m_PixelsPerMeter * 20.f, 0));
+            //body->AddForce(glm::vec2(m_PixelsPerMeter * 20.f, 0));
             //Gravity
             body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->mass));
+            //body->GenerateDrag(0.00000001f);
+
+            body->GenerateDrag(0.02f);
         }
 
         for (const auto& body : m_RigidBodys)
@@ -178,20 +191,15 @@ void PhysicsEngine::FixedUpdate()
 
         for (const auto& body : m_RigidBodys)
         {
-            if (body->pos.y >= 600 || body->pos.y <= 0)
+
+            if (body->pos.y >= 550 || body->pos.y <= 50)
             {
                 body->v.y *= -1;
             }
-            if (body->pos.x <= 0 || body->pos.x >= 800)
+            if (body->pos.x <= 50 || body->pos.x >= 750)
             {
                 body->v.x *= -1;
             }
-
-            //if (body->pos.y >= 300)
-            //{
-            //    body->GenerateDrag(0.03f);
-            //    body->AddForce(glm::vec2{ 0, -1000.f });
-            //}
         }
 
         m_DeltaLag -= m_PhysicsTimeStep;
