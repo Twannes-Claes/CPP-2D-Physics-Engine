@@ -27,9 +27,9 @@ public:
 	void Update(const float deltaTime);
 	void Draw(SDL_Renderer* pRenderer) const;
 
+	//Position and Velocity can be accessed publically
 	glm::vec2 pos{};
 	glm::vec2 v{};
-	glm::vec2 a{};
 
 	float mass{};
 	float invMass{};
@@ -38,6 +38,8 @@ private:
 
 	std::unique_ptr<Shape> m_ColliderShape = nullptr;
 
-	glm::vec2 totalForce{};
+	glm::vec2 a{};
+
+	glm::vec2 accumulatedForce{};
 };
 

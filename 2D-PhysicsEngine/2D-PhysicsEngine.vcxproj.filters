@@ -22,6 +22,9 @@
     <Filter Include="Game Files\Rendering">
       <UniqueIdentifier>{b8e30696-bfd7-4ab2-a58c-d0f1445f649b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game Files\Physics\Colliders\Shapes">
+      <UniqueIdentifier>{6824746f-c20a-4c49-a853-82e1250ec908}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -39,14 +42,14 @@
     <ClCompile Include="Font.cpp">
       <Filter>Game Files\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Circle.cpp">
-      <Filter>Game Files\Physics\Colliders</Filter>
-    </ClCompile>
     <ClCompile Include="Box.cpp">
-      <Filter>Game Files\Physics\Colliders</Filter>
+      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Circle.cpp">
+      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
     </ClCompile>
     <ClCompile Include="Polygon.cpp">
-      <Filter>Game Files\Physics\Colliders</Filter>
+      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -62,14 +65,14 @@
     <ClInclude Include="Font.h">
       <Filter>Game Files\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Circle.h">
-      <Filter>Game Files\Physics\Colliders</Filter>
-    </ClInclude>
     <ClInclude Include="Box.h">
-      <Filter>Game Files\Physics\Colliders</Filter>
+      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Circle.h">
+      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
     </ClInclude>
     <ClInclude Include="Polygon.h">
-      <Filter>Game Files\Physics\Colliders</Filter>
+      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

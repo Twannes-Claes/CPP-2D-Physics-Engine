@@ -10,7 +10,7 @@ public:
 
 	virtual Type GetType()  const override { return Type::Circle; }
 	virtual std::unique_ptr<Shape> Clone() const override;
-	virtual void DrawShape(SDL_Renderer* pRenderer) const override;
+	virtual void DrawShape(SDL_Renderer* pRenderer, const glm::vec2& pos) override;
 
 	Circle(const Circle& other) = delete;
 	Circle(Circle&& other) = delete;
@@ -18,6 +18,11 @@ public:
 	Circle& operator=(Circle&& other) = delete;
 
 private:
+
+	int DrawLine(SDL_Renderer* renderer, const float x1, const float x2, const float y) const;
+	int DrawPoint(SDL_Renderer* renderer, const float x, const float y) const;
+
+	int DrawCircle(SDL_Renderer* renderer, float x, float y, int rx, int ry) const;
 
 	float m_Radius{};
 };

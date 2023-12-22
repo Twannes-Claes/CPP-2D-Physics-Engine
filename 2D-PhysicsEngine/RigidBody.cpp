@@ -37,7 +37,7 @@ RigidBody::~RigidBody() = default;
 
 void RigidBody::AddForce(const glm::vec2& force)
 {
-	totalForce += force;
+	accumulatedForce += force;
 }
 
 void RigidBody::GenerateDrag(const float dragCoefficient)
@@ -55,16 +55,16 @@ void RigidBody::GenerateFriction(const float frictionCoefficient)
 void RigidBody::Update(const float deltaTime)
 {
 	//Euler integration of acceleration
-	a = totalForce * invMass;
+	a = accumulatedForce * invMass;
 
 	v += a * deltaTime;
 
 	pos += v * deltaTime;
 
-	totalForce = glm::vec2{};
+	accumulatedForce = glm::vec2{};
 }
 
 void RigidBody::Draw(SDL_Renderer* pRenderer) const
 {
-	pRenderer;
+	if (m_ColliderShape) m_ColliderShape->DrawShape(pRenderer, pos);
 }

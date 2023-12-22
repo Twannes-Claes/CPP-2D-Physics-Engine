@@ -12,7 +12,7 @@ public:
 
 	virtual Type GetType()  const override { return Type::Box; }
 	virtual std::unique_ptr<Shape> Clone() const override;
-	virtual void DrawShape(SDL_Renderer* pRenderer) const override;
+	virtual void DrawShape(SDL_Renderer* pRenderer, const glm::vec2& pos) override;
 
 	Box(const Box& other) = delete;
 	Box(Box&& other) = delete;
@@ -23,5 +23,6 @@ private:
 
 	const glm::vec2 m_Dimensions{};
 
+	SDL_FRect m_Rect{};
 };
 

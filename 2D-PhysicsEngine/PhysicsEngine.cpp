@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "Box.h"
+#include "Circle.h"
 #include "SDL2/include/SDL.h"
 #include "Font.h"
 #include "RigidBody.h"
@@ -25,8 +27,12 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
 
     m_FontFPS = std::make_unique<Font>("ARCADECLASSIC.TTF", 24, SDL_Color{ 255, 255, 255, 255 }, 10, 10, m_pRenderer);
 
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
+
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(10.f, 10.f),150.f, 100.f, 10.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(100.f), 250.f, 100.f, 10.f));
+
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -159,7 +165,7 @@ void PhysicsEngine::FixedUpdate()
         for (const auto& body : m_RigidBodys)
         {
             //Wind
-            //part->AddForce(glm::vec2(m_PixelsPerMeter * 2.f, 0));
+            body->AddForce(glm::vec2(m_PixelsPerMeter * 20.f, 0));
             //Gravity
             body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->mass));
         }
@@ -181,11 +187,11 @@ void PhysicsEngine::FixedUpdate()
                 body->v.x *= -1;
             }
 
-            if (body->pos.y >= 300)
-            {
-                body->GenerateDrag(0.03f);
-                body->AddForce(glm::vec2{ 0, -1000.f });
-            }
+            //if (body->pos.y >= 300)
+            //{
+            //    body->GenerateDrag(0.03f);
+            //    body->AddForce(glm::vec2{ 0, -1000.f });
+            //}
         }
 
         m_DeltaLag -= m_PhysicsTimeStep;
@@ -202,16 +208,16 @@ void PhysicsEngine::Draw() const
     //This is for a smoothed transition
     //object.previous* a + object.curr * (1.f - a);
 
-    SDL_SetRenderDrawColor(m_pRenderer, 10, 10, 255, 200);
-    constexpr SDL_FRect rect{ 0, 300, 800, 300 };
-    SDL_RenderFillRectF(m_pRenderer, &rect);
+    //SDL_SetRenderDrawColor(m_pRenderer, 10, 10, 255, 200);
+    //constexpr SDL_FRect rect{ 0, 300, 800, 300 };
+    //SDL_RenderFillRectF(m_pRenderer, &rect);
 
     SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
 
     for (const auto& body : m_RigidBodys)
     {
         body->Draw(m_pRenderer);
-        SDL_RenderDrawPointF(m_pRenderer, body->pos.x, body->pos.y);
+        //SDL_RenderDrawPointF(m_pRenderer, body->pos.x, body->pos.y);
     }
 
     m_FontFPS->Draw();

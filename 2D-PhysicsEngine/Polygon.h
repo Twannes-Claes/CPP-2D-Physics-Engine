@@ -4,6 +4,8 @@
 #include "Shape.h"
 #include "glm/vec2.hpp"
 
+class RigidBody;
+
 class Polygon final : public Shape
 {
 public:
@@ -11,9 +13,9 @@ public:
 	explicit Polygon(std::vector<glm::vec2> vertices);
 	virtual ~Polygon() override = default;
 
-	virtual Type GetType()  const override { return Type::Poly; }
+	virtual Type GetType()  const override { return Type::Polygon; }
 	virtual std::unique_ptr<Shape> Clone() const override;
-	virtual void DrawShape(SDL_Renderer* pRenderer) const override;
+	virtual void DrawShape(SDL_Renderer* pRenderer, const glm::vec2& pos) override;
 
 	Polygon(const Polygon& other) = delete;
 	Polygon(Polygon&& other) = delete;
