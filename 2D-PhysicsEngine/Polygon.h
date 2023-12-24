@@ -16,6 +16,7 @@ public:
 	virtual Type GetType()  const override { return Type::Polygon; }
 	virtual std::unique_ptr<Shape> Clone() const override;
 	virtual void DrawShape(SDL_Renderer* pRenderer, const glm::vec2& pos) override;
+	float GetMomentOfInteria(const float) const override { return 0.f; }
 
 	Polygon(const Polygon& other) = delete;
 	Polygon(Polygon&& other) = delete;

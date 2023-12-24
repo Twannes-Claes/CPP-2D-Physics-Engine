@@ -13,6 +13,7 @@ public:
 	virtual Type GetType()  const override { return Type::Box; }
 	virtual std::unique_ptr<Shape> Clone() const override;
 	virtual void DrawShape(SDL_Renderer* pRenderer, const glm::vec2& pos) override;
+	float GetMomentOfInteria(const float mass) const override;
 
 	Box(const Box& other) = delete;
 	Box(Box&& other) = delete;

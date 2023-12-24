@@ -32,8 +32,8 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
 
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 100.f),150.f, 100.f, 10.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(100.f), 250.f, 100.f, 10.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 100.f),150.f, 100.f, 10.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 1.f));
     //
     //std::vector<SDL_FPoint> points;
     //points.push_back(SDL_FPoint{ -50.f,-50.f });
@@ -174,13 +174,12 @@ void PhysicsEngine::FixedUpdate()
         //Update objects
         for (const auto& body : m_RigidBodys)
         {
-            //Wind
-            //body->AddForce(glm::vec2(m_PixelsPerMeter * 20.f, 0));
             //Gravity
-            body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->mass));
-            //body->GenerateDrag(0.00000001f);
+            //body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
 
-            body->GenerateDrag(0.02f);
+            //body->GenerateDrag(0.02f);
+
+            body->AddTorque(20.f);
         }
 
         for (const auto& body : m_RigidBodys)
@@ -192,13 +191,13 @@ void PhysicsEngine::FixedUpdate()
         for (const auto& body : m_RigidBodys)
         {
 
-            if (body->pos.y >= 550 || body->pos.y <= 50)
+            if (body->Pos.y >= 550 || body->Pos.y <= 50)
             {
-                body->v.y *= -1;
+                body->Velocity.y *= -1;
             }
-            if (body->pos.x <= 50 || body->pos.x >= 750)
+            if (body->Pos.x <= 50 || body->Pos.x >= 750)
             {
-                body->v.x *= -1;
+                body->Velocity.x *= -1;
             }
         }
 
@@ -224,6 +223,7 @@ void PhysicsEngine::Draw() const
 
     for (const auto& body : m_RigidBodys)
     {
+        std::cout << body->Rot << '\n';
         body->Draw(m_pRenderer);
         //SDL_RenderDrawPointF(m_pRenderer, body->pos.x, body->pos.y);
     }

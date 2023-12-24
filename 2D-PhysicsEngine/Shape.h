@@ -20,8 +20,14 @@ public:
 	virtual ~Shape() = default;
 
 	virtual Type GetType() const = 0;
+
 	virtual std::unique_ptr<Shape> Clone() const = 0;
+
+	virtual float GetMomentOfInteria(const float mass) const = 0;
+
 	virtual void DrawShape(SDL_Renderer* pRenderer, const glm::vec2& pos) = 0;
+
+	void UpdateRotation(const float rigidBodyRot) { m_RigidBodyRot = rigidBodyRot; }
 
 	Shape(const Shape& other) = delete;
 	Shape(Shape&& other) = delete;
@@ -31,5 +37,7 @@ public:
 protected:
 
 	Shape() = default;
+
+	float m_RigidBodyRot{};
 };
 
