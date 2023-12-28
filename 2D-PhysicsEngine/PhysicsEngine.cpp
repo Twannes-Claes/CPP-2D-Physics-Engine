@@ -32,8 +32,8 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
 
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 50.f),150.f, 100.f, 10.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 1.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 50.f),150.f, 100.f, 1.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 1.f));
     //
     //std::vector<SDL_FPoint> points;
     //points.push_back(SDL_FPoint{ -50.f,-50.f });
@@ -188,6 +188,16 @@ void PhysicsEngine::FixedUpdate()
             body->Update(m_PhysicsTimeStep);
         }
 
+        //Loop trough all rigidbodies
+        for (int index{}; index <= static_cast<int>(m_RigidBodys.size()) - 1; ++index)
+        {
+            //Each rigidbody checks all the bodies right of it, to avoid duplicate checking
+            for(int jndex{}; jndex < static_cast<int>(m_RigidBodys.size()); ++jndex)
+            {
+	            //Find collision
+            }
+        }
+
         for (const auto& body : m_RigidBodys)
         {
 
@@ -207,26 +217,17 @@ void PhysicsEngine::FixedUpdate()
 
 void PhysicsEngine::Draw() const
 {
-    //Clear render buffer
+    //Clear render buffer and set background color
     SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 0, 0);
     SDL_RenderClear(m_pRenderer);
 
-    //Setup linear interpolation for drawing between 2 frames
-    //This is for a smoothed transition
-    //object.previous* a + object.curr * (1.f - a);
-
-    //SDL_SetRenderDrawColor(m_pRenderer, 10, 10, 255, 200);
-    //constexpr SDL_FRect rect{ 0, 300, 800, 300 };
-    //SDL_RenderFillRectF(m_pRenderer, &rect);
-
+    //Set the render color of drawed objects
     SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
-
     for (const auto& body : m_RigidBodys)
     {
-        std::cout << body->Rot << '\n';
         body->Draw(m_pRenderer);
-        //SDL_RenderDrawPointF(m_pRenderer, body->pos.x, body->pos.y);
     }
+
 
     m_FontFPS->Draw();
 

@@ -23,16 +23,14 @@ RigidBody::RigidBody(const Shape& colliderShape, const float x, const float y, f
 	//Get the unique pointer cloned by the Shape
 	m_ColliderShape = colliderShape.Clone();
 
+	m_ColliderShape->UpdatePosRot(0, Pos);
+
 	I = m_ColliderShape->GetMomentOfInteria(mass);
 
 	m_InvI = 0;
 
 	if (I > 0.f) m_InvI = 1 / I;
 
-	if (Circle* circleShape = dynamic_cast<Circle*>(m_ColliderShape.get()))
-	{
-		circleShape->SetCenter(Pos);
-	}
 }
 
 RigidBody::~RigidBody() = default;
@@ -75,9 +73,9 @@ void RigidBody::Update(const float deltaTime)
 	//Clear torque force
 	m_AccumulatedTorque = 0;
 
-	//Update rot of the shape to recalculate worl space
-	m_ColliderShape->UpdateRotation(Rot);
-	m_ColliderShape->Update(Pos);
+	//Update rot of the shape to then recalculate world space
+	m_ColliderShape->UpdatePosRot(Rot, Pos);
+	m_ColliderShape->UpdateVertices();
 }
 
 void RigidBody::Draw(SDL_Renderer* pRenderer) const

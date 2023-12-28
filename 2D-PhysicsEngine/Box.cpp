@@ -19,7 +19,6 @@ std::unique_ptr<Shape> Box::Clone() const
 float Box::GetMomentOfInteria(const float mass) const
 {
 	//I = 1/12 * (w^2 * h^2) * mass
-
 	constexpr float oneTwelfth{ 1.f / 12.f };
 
 	return oneTwelfth * ((m_Dimensions.x * m_Dimensions.x) + (m_Dimensions.y * m_Dimensions.y)) * mass;

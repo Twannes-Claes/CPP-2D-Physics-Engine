@@ -12,8 +12,11 @@ public:
 	explicit Box(const glm::vec2& dimensions);
 	virtual ~Box() override = default;
 
-	virtual void Update(const glm::vec2& pos) override { Polygon::Update(pos); }
+	virtual void UpdateVertices() override { Polygon::UpdateVertices(); }
 	virtual void DrawShape(SDL_Renderer* pRenderer) override { Polygon::DrawShape(pRenderer); }
+
+	virtual bool IsColliding(RigidBody* other) override { return false; other;
+	}
 
 	virtual std::unique_ptr<Shape> Clone() const override;
 

@@ -13,8 +13,10 @@ public:
 	explicit Polygon(std::vector<SDL_FPoint> vertices);
 	virtual ~Polygon() override = default;
 
-	virtual void Update(const glm::vec2& pos) override;
+	virtual void UpdateVertices() override;
 	virtual void DrawShape(SDL_Renderer* pRenderer) override;
+
+	virtual bool IsColliding(RigidBody* other) override { return false; other; }
 
 	virtual std::unique_ptr<Shape> Clone() const override;
 

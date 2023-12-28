@@ -16,7 +16,7 @@ std::unique_ptr<Shape> Polygon::Clone() const
 	return std::make_unique<Polygon>(m_Vertices);
 }
 
-void Polygon::Update(const glm::vec2& pos)
+void Polygon::UpdateVertices()
 {
     //Precompute rotation matrix
     const glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), m_RigidBodyRot, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -26,7 +26,7 @@ void Polygon::Update(const glm::vec2& pos)
     {
         glm::vec4 rotatedPoint = rotationMatrix * glm::vec4(m_Vertices[i].x, m_Vertices[i].y, 0.0f, 1.0f);
 
-        const glm::vec2 translatedPoint = glm::vec2(rotatedPoint) + pos;
+        const glm::vec2 translatedPoint = glm::vec2(rotatedPoint) + m_RigidBodyPos;
 
         m_TransformedPoints[i] = { translatedPoint.x, translatedPoint.y };
     }

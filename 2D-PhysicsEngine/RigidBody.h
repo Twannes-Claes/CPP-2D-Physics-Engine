@@ -30,6 +30,8 @@ public:
 	void Update(const float deltaTime);
 	void Draw(SDL_Renderer* pRenderer) const;
 
+	Shape* GetShape() const { return m_ColliderShape.get(); }
+
 	//Publically accesable linear motion variables
 	glm::vec2 Pos{};
 	glm::vec2 Velocity{};

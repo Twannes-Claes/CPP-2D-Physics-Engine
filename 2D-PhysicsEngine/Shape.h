@@ -3,12 +3,14 @@
 #include "SDL_render.h"
 #include "glm/vec2.hpp"
 
+class RigidBody;
+
 class Shape
 {
 public:
 
 	//Enum class for all the different shapes colliders can be
-	enum class Type
+	enum Type
 	{
 		Circle,
 		Box,
@@ -19,17 +21,19 @@ public:
 	//No constructor for shape, each inherited class has their own constructor
 	virtual ~Shape() = default;
 
-	virtual void Update(const glm::vec2& pos) = 0;
+	virtual void UpdateVertices() = 0;
 	virtual void DrawShape(SDL_Renderer* pRenderer) = 0;
+
+	virtual bool IsColliding(RigidBody* other) = 0;
+
+	virtual float GetMomentOfInteria(const float mass) const = 0;
+	virtual Type GetType() const = 0;
+
 
 	virtual std::unique_ptr<Shape> Clone() const = 0;
 
-	virtual float GetMomentOfInteria(const float mass) const = 0;
-
-	virtual Type GetType() const = 0;
-
 	//TODO: Make this dirty flag
-	void UpdateRotation(const float rigidBodyRot) { m_RigidBodyRot = rigidBodyRot; }
+	void UpdatePosRot(const float rigidBodyRot, const glm::vec2& pos) { m_RigidBodyRot = rigidBodyRot; m_RigidBodyPos = pos; }
 
 
 
@@ -43,5 +47,6 @@ protected:
 	Shape() = default;
 
 	float m_RigidBodyRot{};
+	glm::vec2 m_RigidBodyPos{};
 };
 
