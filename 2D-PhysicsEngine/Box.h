@@ -1,8 +1,10 @@
 #pragma once
-#include "Shape.h"
+#include <vector>
+
+#include "Polygon.h"
 #include "glm/vec2.hpp"
 
-class Box final : public Shape
+class Box final : public Polygon
 {
 public:
 
@@ -10,9 +12,13 @@ public:
 	explicit Box(const glm::vec2& dimensions);
 	virtual ~Box() override = default;
 
-	virtual Type GetType()  const override { return Type::Box; }
+	virtual void Update(const glm::vec2& pos) override { Polygon::Update(pos); }
+	virtual void DrawShape(SDL_Renderer* pRenderer) override { Polygon::DrawShape(pRenderer); }
+
 	virtual std::unique_ptr<Shape> Clone() const override;
-	virtual void DrawShape(SDL_Renderer* pRenderer, const glm::vec2& pos) override;
+
+	virtual Type GetType()  const override { return Type::Box; }
+
 	float GetMomentOfInteria(const float mass) const override;
 
 	Box(const Box& other) = delete;
@@ -22,8 +28,8 @@ public:
 
 private:
 
-	const glm::vec2 m_Dimensions{};
+	std::vector<SDL_FPoint> GetBoxVertices(const glm::vec2& dimensions) const;
 
-	SDL_FRect m_Rect{};
+	const glm::vec2 m_Dimensions{};
 };
 

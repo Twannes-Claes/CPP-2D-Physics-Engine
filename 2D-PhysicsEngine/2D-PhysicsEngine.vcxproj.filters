@@ -33,9 +33,6 @@
     <ClCompile Include="PhysicsEngine.cpp">
       <Filter>Engine Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shape.cpp">
-      <Filter>Game Files\Physics\Colliders</Filter>
-    </ClCompile>
     <ClCompile Include="RigidBody.cpp">
       <Filter>Game Files\Physics</Filter>
     </ClCompile>

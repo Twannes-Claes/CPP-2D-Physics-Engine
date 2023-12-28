@@ -19,15 +19,19 @@ public:
 	//No constructor for shape, each inherited class has their own constructor
 	virtual ~Shape() = default;
 
-	virtual Type GetType() const = 0;
+	virtual void Update(const glm::vec2& pos) = 0;
+	virtual void DrawShape(SDL_Renderer* pRenderer) = 0;
 
 	virtual std::unique_ptr<Shape> Clone() const = 0;
 
 	virtual float GetMomentOfInteria(const float mass) const = 0;
 
-	virtual void DrawShape(SDL_Renderer* pRenderer, const glm::vec2& pos) = 0;
+	virtual Type GetType() const = 0;
 
+	//TODO: Make this dirty flag
 	void UpdateRotation(const float rigidBodyRot) { m_RigidBodyRot = rigidBodyRot; }
+
+
 
 	Shape(const Shape& other) = delete;
 	Shape(Shape&& other) = delete;

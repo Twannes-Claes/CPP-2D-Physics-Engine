@@ -2,6 +2,7 @@
 
 #pragma warning(push)
 #pragma warning(disable: 4201) // Disable warning C4201
+#include "Circle.h"
 #include "glm/gtx/norm.hpp"
 #pragma warning(pop)
 
@@ -27,6 +28,11 @@ RigidBody::RigidBody(const Shape& colliderShape, const float x, const float y, f
 	m_InvI = 0;
 
 	if (I > 0.f) m_InvI = 1 / I;
+
+	if (Circle* circleShape = dynamic_cast<Circle*>(m_ColliderShape.get()))
+	{
+		circleShape->SetCenter(Pos);
+	}
 }
 
 RigidBody::~RigidBody() = default;
@@ -64,16 +70,17 @@ void RigidBody::Update(const float deltaTime)
 
 	Rot += m_AngularVelocity * deltaTime;
 
-	Rot = std::fmodf(Rot, 360.f);
+	Rot = std::fmodf(Rot, static_cast<float>(M_PI) * 2.f);
 
 	//Clear torque force
 	m_AccumulatedTorque = 0;
+
+	//Update rot of the shape to recalculate worl space
+	m_ColliderShape->UpdateRotation(Rot);
+	m_ColliderShape->Update(Pos);
 }
 
 void RigidBody::Draw(SDL_Renderer* pRenderer) const
 {
-	//Update rot of the shape when drawing
-	m_ColliderShape->UpdateRotation(Rot);
-
-	if (m_ColliderShape) m_ColliderShape->DrawShape(pRenderer, Pos);
+	if (m_ColliderShape) m_ColliderShape->DrawShape(pRenderer);
 }

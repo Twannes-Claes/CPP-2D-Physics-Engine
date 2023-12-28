@@ -3,23 +3,38 @@
 #include <iostream>
 
 #include "RigidBody.h"
+#include "glm/ext/matrix_transform.hpp"
 
-Polygon::Polygon(std::vector<SDL_FPoint> vertices) :m_Vertices(std::move(vertices)) {}
+Polygon::Polygon(std::vector<SDL_FPoint> vertices):
+m_Vertices(std::move(vertices))
+{
+    m_TransformedPoints.resize(m_Vertices.size());
+}
 
 std::unique_ptr<Shape> Polygon::Clone() const
 {
 	return std::make_unique<Polygon>(m_Vertices);
 }
 
-void Polygon::DrawShape(SDL_Renderer* pRenderer, const glm::vec2& pos)
+void Polygon::Update(const glm::vec2& pos)
 {
-	for (const SDL_FPoint& point : m_Vertices)
-	{
-		SDL_FPoint newPoint{ point.x + pos.x, point.y + pos.y };
-		m_TransformedPoints.push_back(newPoint);
-	}
+    //Precompute rotation matrix
+    const glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), m_RigidBodyRot, glm::vec3(0.0f, 0.0f, 1.0f));
 
-	SDL_RenderDrawLinesF(pRenderer, m_TransformedPoints.data(), static_cast<int>(m_TransformedPoints.size()));
+    //Convert from local to world space
+    for (int i{}; i < static_cast<int>(m_Vertices.size()); ++i)
+    {
+        glm::vec4 rotatedPoint = rotationMatrix * glm::vec4(m_Vertices[i].x, m_Vertices[i].y, 0.0f, 1.0f);
 
-	m_TransformedPoints.clear();
+        const glm::vec2 translatedPoint = glm::vec2(rotatedPoint) + pos;
+
+        m_TransformedPoints[i] = { translatedPoint.x, translatedPoint.y };
+    }
 }
+
+void Polygon::DrawShape(SDL_Renderer* pRenderer)
+{
+	SDL_RenderDrawLinesF(pRenderer, m_TransformedPoints.data(), static_cast<int>(m_TransformedPoints.size()));
+}
+
+

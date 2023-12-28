@@ -166,7 +166,6 @@ copy "$(SolutionDir)SDL2\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
-    <ClCompile Include="Shape.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Box.h" />

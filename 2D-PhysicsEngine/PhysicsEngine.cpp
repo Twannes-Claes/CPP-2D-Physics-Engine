@@ -32,16 +32,16 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
 
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 100.f),150.f, 100.f, 10.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 1.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 50.f),150.f, 100.f, 10.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 1.f));
     //
     //std::vector<SDL_FPoint> points;
     //points.push_back(SDL_FPoint{ -50.f,-50.f });
     //points.push_back(SDL_FPoint{ 50.f,-50.f });
     //points.push_back(SDL_FPoint{ 0.f,50.f });
     //points.push_back(SDL_FPoint{ -50.f,-50.f });
-    //
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 400.f, 100.f, 1.f));
+    ////
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 400.f, 100.f, 100.f));
 
 }
 
@@ -179,7 +179,7 @@ void PhysicsEngine::FixedUpdate()
 
             //body->GenerateDrag(0.02f);
 
-            body->AddTorque(20.f);
+            body->AddTorque(200.f);
         }
 
         for (const auto& body : m_RigidBodys)
