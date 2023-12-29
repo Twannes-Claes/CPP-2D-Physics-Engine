@@ -12,7 +12,7 @@
 #include "Polygon.h"
 #include "RigidBody.h"
 #include "glm/geometric.hpp"
-#include "CollisionSolvers.h"
+#include "CollisionSolver.h"
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
@@ -34,14 +34,14 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
 
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 50.f),150.f, 100.f, 1.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 50.f, 100.f, 1.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 2.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 3.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 4.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 50.f, 100.f, 5.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 6.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 350.f, 100.f, 7.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 8.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(150.f), 400.f, 300.f, -1.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 2.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 3.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 4.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 50.f, 100.f, 5.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 6.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 350.f, 100.f, 7.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 8.f));
     //
     //std::vector<SDL_FPoint> points;
     //points.push_back(SDL_FPoint{ -50.f,-50.f });
@@ -124,6 +124,8 @@ void PhysicsEngine::Run()
                    int x{}, y{};
                    SDL_GetMouseState(&x, &y);
 
+                   m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(10.f), static_cast<float>(x), static_cast<float>(y), 1.f));
+
                    std::cout << "Clicked left mouse button: " << x << "/" << y << '\n';
 
                    break;
@@ -182,7 +184,7 @@ void PhysicsEngine::FixedUpdate()
         for (const auto& body : m_RigidBodys)
         {
             //Add wind
-            body->AddForce(glm::vec2{ 20.f * m_PixelsPerMeter, 0.f });
+            //body->AddForce(glm::vec2{ 20.f, 0.f });
 
             //Gravity
             body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));

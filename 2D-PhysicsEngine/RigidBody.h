@@ -32,11 +32,15 @@ public:
 
 	Shape* GetShape() const { return m_ColliderShape.get(); }
 
+	//If mass is less than 0, object is static
+	bool IsStatic() const { return InvMass <= 0.0005f; }
+
 	//Publically accesable linear motion variables
 	glm::vec2 Pos{};
 	glm::vec2 Velocity{};
 
 	float Mass{};
+	float InvMass{};
 
 	//Publically accesable angular motion variables
 	float Rot{};
@@ -54,7 +58,6 @@ private:
 	glm::vec2 m_AccumulatedForce{};
 	glm::vec2 m_Acceleration{};
 
-	float m_InvMass{};
 
 	//Angular variables
 	float m_AccumulatedTorque{};

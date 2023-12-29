@@ -16,9 +16,9 @@ RigidBody::RigidBody(const Shape& colliderShape, const float x, const float y, f
 	//Learned this in programming 4 https://gameprogrammingpatterns.com/prototype.html
 
 	//Get the inverse of the mass
-	m_InvMass = 0;
+	InvMass = 0;
 	
-	if (mass > 0) m_InvMass = 1 / mass;
+	if (mass > 0) InvMass = 1 / mass;
 
 	//Get the unique pointer cloned by the Shape
 	m_ColliderShape = colliderShape.Clone();
@@ -51,8 +51,11 @@ void RigidBody::GenerateFriction(const float frictionCoefficient)
 
 void RigidBody::Update(const float deltaTime)
 {
+	//Static objects shouldnt update
+	if(IsStatic()) return;
+
 	//Euler integration of acceleration
-	m_Acceleration = m_AccumulatedForce * m_InvMass;
+	m_Acceleration = m_AccumulatedForce * InvMass;
 
 	Velocity += m_Acceleration * deltaTime;
 

@@ -25,6 +25,9 @@
     <Filter Include="Game Files\Physics\Collision\Shapes">
       <UniqueIdentifier>{6824746f-c20a-4c49-a853-82e1250ec908}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game Files\Physics\Body">
+      <UniqueIdentifier>{a13c415f-0d51-41df-87ee-84647aa660c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -32,9 +35,6 @@
     </ClCompile>
     <ClCompile Include="PhysicsEngine.cpp">
       <Filter>Engine Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RigidBody.cpp">
-      <Filter>Game Files\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Font.cpp">
       <Filter>Game Files\Rendering</Filter>
@@ -48,16 +48,16 @@
     <ClCompile Include="Polygon.cpp">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionSolvers.cpp">
+    <ClCompile Include="CollisionSolver.cpp">
       <Filter>Game Files\Physics\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Game Files\Physics\Body</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PhysicsEngine.h">
       <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RigidBody.h">
-      <Filter>Game Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">
       <Filter>Game Files\Rendering</Filter>
@@ -71,11 +71,14 @@
     <ClInclude Include="Polygon.h">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionSolvers.h">
+    <ClInclude Include="CollisionSolver.h">
       <Filter>Game Files\Physics\Collision</Filter>
     </ClInclude>
     <ClInclude Include="Shape.h">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Game Files\Physics\Body</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
