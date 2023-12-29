@@ -43,6 +43,8 @@ public:
 
 	float I{}; //Moment Of Inertia(Inertia)
 
+	bool colliding = false;
+
 private:
 
 	//Pointer referencing the collider of the rigidbody

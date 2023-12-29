@@ -1,8 +1,5 @@
 #include "Polygon.h"
 
-#include <iostream>
-
-#include "RigidBody.h"
 #include "glm/ext/matrix_transform.hpp"
 
 Polygon::Polygon(std::vector<SDL_FPoint> vertices):
@@ -36,5 +33,3 @@ void Polygon::DrawShape(SDL_Renderer* pRenderer)
 {
 	SDL_RenderDrawLinesF(pRenderer, m_TransformedPoints.data(), static_cast<int>(m_TransformedPoints.size()));
 }
-
-

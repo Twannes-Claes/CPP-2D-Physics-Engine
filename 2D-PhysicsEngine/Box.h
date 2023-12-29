@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "Polygon.h"
-#include "glm/vec2.hpp"
 
 class Box final : public Polygon
 {
@@ -14,9 +13,6 @@ public:
 
 	virtual void UpdateVertices() override { Polygon::UpdateVertices(); }
 	virtual void DrawShape(SDL_Renderer* pRenderer) override { Polygon::DrawShape(pRenderer); }
-
-	virtual bool IsColliding(RigidBody* other) override { return false; other;
-	}
 
 	virtual std::unique_ptr<Shape> Clone() const override;
 

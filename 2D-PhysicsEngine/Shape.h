@@ -10,7 +10,7 @@ class Shape
 public:
 
 	//Enum class for all the different shapes colliders can be
-	enum Type
+	enum class Type
 	{
 		Circle,
 		Box,
@@ -23,8 +23,6 @@ public:
 
 	virtual void UpdateVertices() = 0;
 	virtual void DrawShape(SDL_Renderer* pRenderer) = 0;
-
-	virtual bool IsColliding(RigidBody* other) = 0;
 
 	virtual float GetMomentOfInteria(const float mass) const = 0;
 	virtual Type GetType() const = 0;

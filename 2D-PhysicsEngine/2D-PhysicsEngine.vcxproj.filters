@@ -16,13 +16,13 @@
     <Filter Include="Game Files\Physics">
       <UniqueIdentifier>{47056ecb-efd9-4847-bb5b-b5b3c31eca6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game Files\Physics\Colliders">
-      <UniqueIdentifier>{2979ed9e-e1bb-43db-ad14-75cc61349f1f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game Files\Rendering">
       <UniqueIdentifier>{b8e30696-bfd7-4ab2-a58c-d0f1445f649b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game Files\Physics\Colliders\Shapes">
+    <Filter Include="Game Files\Physics\Collision">
+      <UniqueIdentifier>{2979ed9e-e1bb-43db-ad14-75cc61349f1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Files\Physics\Collision\Shapes">
       <UniqueIdentifier>{6824746f-c20a-4c49-a853-82e1250ec908}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -40,21 +40,21 @@
       <Filter>Game Files\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="Box.cpp">
-      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
+      <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClCompile>
     <ClCompile Include="Circle.cpp">
-      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
+      <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClCompile>
     <ClCompile Include="Polygon.cpp">
-      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
+      <Filter>Game Files\Physics\Collision\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionSolvers.cpp">
+      <Filter>Game Files\Physics\Collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PhysicsEngine.h">
       <Filter>Engine Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shape.h">
-      <Filter>Game Files\Physics\Colliders</Filter>
     </ClInclude>
     <ClInclude Include="RigidBody.h">
       <Filter>Game Files\Physics</Filter>
@@ -63,13 +63,19 @@
       <Filter>Game Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Box.h">
-      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
+      <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClInclude>
     <ClInclude Include="Circle.h">
-      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
+      <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClInclude>
     <ClInclude Include="Polygon.h">
-      <Filter>Game Files\Physics\Colliders\Shapes</Filter>
+      <Filter>Game Files\Physics\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionSolvers.h">
+      <Filter>Game Files\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape.h">
+      <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

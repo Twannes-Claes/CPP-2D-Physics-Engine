@@ -12,6 +12,7 @@
 #include "Polygon.h"
 #include "RigidBody.h"
 #include "glm/geometric.hpp"
+#include "CollisionSolvers.h"
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
@@ -32,8 +33,15 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
 
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 50.f),150.f, 100.f, 1.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 1.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 50.f),150.f, 100.f, 1.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 50.f, 100.f, 1.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 2.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 3.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 4.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 50.f, 100.f, 5.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 6.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 350.f, 100.f, 7.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 8.f));
     //
     //std::vector<SDL_FPoint> points;
     //points.push_back(SDL_FPoint{ -50.f,-50.f });
@@ -171,35 +179,21 @@ void PhysicsEngine::FixedUpdate()
     //Fixed update loop that checks for missed timesteps
     while (m_DeltaLag >= m_PhysicsTimeStep)
     {
-        //Update objects
         for (const auto& body : m_RigidBodys)
         {
+            //Add wind
+            body->AddForce(glm::vec2{ 20.f * m_PixelsPerMeter, 0.f });
+
             //Gravity
-            //body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
+            body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
 
             //body->GenerateDrag(0.02f);
 
-            body->AddTorque(200.f);
-        }
+            //body->AddTorque(200.f);
 
-        for (const auto& body : m_RigidBodys)
-        {
             //Update
             body->Update(m_PhysicsTimeStep);
-        }
-
-        //Loop trough all rigidbodies
-        for (int index{}; index <= static_cast<int>(m_RigidBodys.size()) - 1; ++index)
-        {
-            //Each rigidbody checks all the bodies right of it, to avoid duplicate checking
-            for(int jndex{}; jndex < static_cast<int>(m_RigidBodys.size()); ++jndex)
-            {
-	            //Find collision
-            }
-        }
-
-        for (const auto& body : m_RigidBodys)
-        {
+            body->colliding = false;
 
             if (body->Pos.y >= 550 || body->Pos.y <= 50)
             {
@@ -208,6 +202,22 @@ void PhysicsEngine::FixedUpdate()
             if (body->Pos.x <= 50 || body->Pos.x >= 750)
             {
                 body->Velocity.x *= -1;
+            }
+        }
+
+        //Loop trough all rigidbodies, except the last one
+        for (int i{}; i <= static_cast<int>(m_RigidBodys.size()) - 1; ++i)
+        {
+            //Each rigidbody checks all the bodies right of it, to avoid duplicate checking
+            for(int j{i + 1}; j < static_cast<int>(m_RigidBodys.size()); ++j)
+            {
+                CollisionSolver::CollisionData data{};
+
+                if(CollisionSolver::IsColliding(m_RigidBodys[i].get(), m_RigidBodys[j].get(), data))
+                {
+                    m_RigidBodys[i]->colliding = true;
+                    m_RigidBodys[j]->colliding = true;
+                }
             }
         }
 
@@ -222,7 +232,7 @@ void PhysicsEngine::Draw() const
     SDL_RenderClear(m_pRenderer);
 
     //Set the render color of drawed objects
-    SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
+    //SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
     for (const auto& body : m_RigidBodys)
     {
         body->Draw(m_pRenderer);

@@ -161,6 +161,7 @@ copy "$(SolutionDir)SDL2\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
   <ItemGroup>
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="Circle.cpp" />
+    <ClCompile Include="CollisionSolvers.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="Polygon.cpp" />
@@ -170,6 +171,7 @@ copy "$(SolutionDir)SDL2\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
   <ItemGroup>
     <ClInclude Include="Box.h" />
     <ClInclude Include="Circle.h" />
+    <ClInclude Include="CollisionSolvers.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="RigidBody.h" />

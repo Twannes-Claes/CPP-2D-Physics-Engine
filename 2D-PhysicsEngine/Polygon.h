@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "Shape.h"
-#include "glm/vec2.hpp"
 
 class RigidBody;
 
@@ -15,8 +14,6 @@ public:
 
 	virtual void UpdateVertices() override;
 	virtual void DrawShape(SDL_Renderer* pRenderer) override;
-
-	virtual bool IsColliding(RigidBody* other) override { return false; other; }
 
 	virtual std::unique_ptr<Shape> Clone() const override;
 
