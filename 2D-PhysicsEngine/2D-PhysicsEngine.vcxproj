@@ -180,6 +180,7 @@ copy "$(SolutionDir)SDL2\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <Font Include="ARCADECLASSIC.TTF" />
+    <Font Include="Burbank Big Condensed Black.otf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

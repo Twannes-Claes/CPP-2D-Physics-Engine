@@ -3,16 +3,16 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include <vector>
 
-#include "Box.h"
-#include "Circle.h"
 #include "SDL2/include/SDL.h"
 #include "Font.h"
-#include "Polygon.h"
-#include "RigidBody.h"
-#include "glm/geometric.hpp"
+
 #include "CollisionSolver.h"
+#include "RigidBody.h"
+
+#include "Circle.h"
+#include "Box.h"
+#include "Polygon.h"
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
@@ -28,29 +28,42 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     //Disable VSYNC
     SDL_RenderSetVSync(m_pRenderer, 0);
 
-    m_FontFPS = std::make_unique<Font>("ARCADECLASSIC.TTF", 24, SDL_Color{ 255, 255, 255, 255 }, 10, 10, m_pRenderer);
+    const char* fontName{ "Burbank Big Condensed Black.otf" };
 
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(100.f, 100.f, 1.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(135.f, 100.f, 10.f));
+    m_FontFPS = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 255, 255, 255 }, 10, 10, m_pRenderer);
+    m_FontFPSFixed = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 0, 0, 255 }, 100, 10, m_pRenderer);
+    m_FontAmountBodies = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 255, 0, 255 }, 750, 10, m_pRenderer);
 
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(100.f, 50.f),150.f, 100.f, 1.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(150.f), 400.f, 300.f, -1.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 2.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 3.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 4.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 50.f, 100.f, 5.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 250.f, 100.f, 6.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 350.f, 100.f, 7.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 150.f, 100.f, 8.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(150.f), 400.f, 300.f, -1.f, 1.f));
     //
-    //std::vector<SDL_FPoint> points;
-    //points.push_back(SDL_FPoint{ -50.f,-50.f });
-    //points.push_back(SDL_FPoint{ 50.f,-50.f });
-    //points.push_back(SDL_FPoint{ 0.f,50.f });
-    //points.push_back(SDL_FPoint{ -50.f,-50.f });
-    ////
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 400.f, 100.f, 100.f));
+    std::vector<SDL_FPoint> points;
+    points.push_back(SDL_FPoint{ -50.f,50.f });
+    points.push_back(SDL_FPoint{ 50.f,50.f });
+    points.push_back(SDL_FPoint{ 50.f,-50.f });
+    points.push_back(SDL_FPoint{ -50.f,-50.f });
+    points.push_back(SDL_FPoint{ -50.f,50.f });
+    //
+    //constexpr float degrees45 = static_cast<float>(M_PI) / 2.f;
 
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 400.f, 300.f, 1.f, 1.f, static_cast<float>(M_PI) / 4.f));
+
+    std::vector<SDL_FPoint> points2;
+    points2.push_back(SDL_FPoint{ -50.f,50.f });
+    points2.push_back(SDL_FPoint{ 50.f,50.f });
+    points2.push_back(SDL_FPoint{ 50.f,-50.f });
+    points2.push_back(SDL_FPoint{ -50.f,-50.f });
+    points2.push_back(SDL_FPoint{ -50.f,50.f });
+
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points2), 500.f, 100.f, 100.f));
+
+    std::vector<SDL_FPoint> points3;
+    points3.push_back(SDL_FPoint{ -500.f,15.f });
+    points3.push_back(SDL_FPoint{ 500.f,15.f });
+    points3.push_back(SDL_FPoint{ 500.f,-15.f });
+    points3.push_back(SDL_FPoint{ -500.f,-15.f });
+    points3.push_back(SDL_FPoint{ -500.f,15.f });
+    
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points3), 400.f, 580.f, 0.f, 1.f));
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -66,8 +79,6 @@ void PhysicsEngine::Run()
     auto startTime = std::chrono::high_resolution_clock::now();
     auto currTime = startTime;
     float delta = 0;
-
-    float fpsTimer = 0;
 
     //If quit is true exit the game loop
     while (!quit)
@@ -124,12 +135,20 @@ void PhysicsEngine::Run()
                    int x{}, y{};
                    SDL_GetMouseState(&x, &y);
 
-                   m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(10.f), static_cast<float>(x), static_cast<float>(y), 1.f));
+                   m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(15.f), static_cast<float>(x), static_cast<float>(y), 1.f, 0.95f));
 
                    std::cout << "Clicked left mouse button: " << x << "/" << y << '\n';
 
                    break;
 		       }
+               case SDL_MOUSEMOTION:
+               {
+                   int x, y;
+                   SDL_GetMouseState(&x, &y);
+                   m_RigidBodys[1]->Pos.x = static_cast<float>(x);
+                   m_RigidBodys[1]->Pos.y = static_cast<float>(y);
+                   break;
+               }
                default:
                {
                    break;
@@ -151,17 +170,19 @@ void PhysicsEngine::Run()
         m_DeltaTime = delta;
         m_DeltaLag += delta;
 
-        fpsTimer += delta;
+        m_fpsTimer += delta;
         ++m_FrameCount;
 
         // Calculate average FPS every second
-        if (fpsTimer >= 1.f)
+        if (m_fpsTimer >= 1.f)
         {
-            m_FontFPS->SetText(std::to_string(static_cast<int>(m_FrameCount/ fpsTimer)).c_str());
+            m_FontFPS->SetText(std::to_string(static_cast<int>(m_FrameCount/ m_fpsTimer)).c_str());
+            m_FontFPSFixed->SetText(std::to_string(m_DurationFixed).c_str());
+            m_FontAmountBodies->SetText(std::to_string(m_RigidBodys.size()).c_str());
 
             //Reset timer
             m_FrameCount = 0;
-            fpsTimer = 0;
+            m_fpsTimer = 0;
         }
     }
 
@@ -181,15 +202,17 @@ void PhysicsEngine::FixedUpdate()
     //Fixed update loop that checks for missed timesteps
     while (m_DeltaLag >= m_PhysicsTimeStep)
     {
+        const auto startFixed = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count();
+
         for (const auto& body : m_RigidBodys)
         {
             //Add wind
             //body->AddForce(glm::vec2{ 20.f, 0.f });
 
             //Gravity
-            body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
-
-            //body->GenerateDrag(0.02f);
+            //body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
+            //
+            //body->GenerateDrag(0.002f);
 
             //body->AddTorque(200.f);
 
@@ -197,26 +220,48 @@ void PhysicsEngine::FixedUpdate()
             body->Update(m_PhysicsTimeStep);
             body->colliding = false;
 
-            if (body->Pos.y >= 550 || body->Pos.y <= 50)
+            if (body->GetShape()->GetType() == Shape::Type::Circle)
             {
-                body->Velocity.y *= -1;
-            }
-            if (body->Pos.x <= 50 || body->Pos.x >= 750)
-            {
-                body->Velocity.x *= -1;
+                const Circle* circleShape = dynamic_cast<Circle*>(body->GetShape());
+
+                if (body->Pos.x - circleShape->GetRadius() <= 0)
+                {
+                    body->Pos.x = circleShape->GetRadius();
+                    body->Velocity.x *= -0.9f;
+                }
+                else if (body->Pos.x + circleShape->GetRadius() >= 800)
+                {
+                    body->Pos.x = 800 - circleShape->GetRadius();
+                    body->Velocity.x *= -0.9f;
+                }
+                if (body->Pos.y - circleShape->GetRadius() <= 0)
+                {
+                    body->Pos.y = circleShape->GetRadius();
+                    body->Velocity.y *= -0.9f;
+                }
+                else if (body->Pos.y + circleShape->GetRadius() >= 600)
+                {
+                    body->Pos.y = 600 - circleShape->GetRadius();
+                    body->Velocity.y *= -0.9f;
+                }
             }
         }
 
+        const int bodiesSize = static_cast<int>(m_RigidBodys.size());
+
         //Loop trough all rigidbodies, except the last one
-        for (int i{}; i <= static_cast<int>(m_RigidBodys.size()) - 1; ++i)
+        for (int i{}; i <= bodiesSize - 1; ++i)
         {
             //Each rigidbody checks all the bodies right of it, to avoid duplicate checking
-            for(int j{i + 1}; j < static_cast<int>(m_RigidBodys.size()); ++j)
+            for (int j{ i + 1 }; j < bodiesSize; ++j)
             {
                 CollisionSolver::CollisionData data{};
 
-                if(CollisionSolver::IsColliding(m_RigidBodys[i].get(), m_RigidBodys[j].get(), data))
+                if (CollisionSolver::IsColliding(m_RigidBodys[i].get(), m_RigidBodys[j].get(), data))
                 {
+                    m_DataCollision = data;
+
+                    //Change color when collidng - DEBUG
                     m_RigidBodys[i]->colliding = true;
                     m_RigidBodys[j]->colliding = true;
                 }
@@ -224,6 +269,10 @@ void PhysicsEngine::FixedUpdate()
         }
 
         m_DeltaLag -= m_PhysicsTimeStep;
+
+        const auto endFixed = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count();
+
+        m_DurationFixed = static_cast<float>(endFixed - startFixed) * 0.001f;
     }
 }
 
@@ -240,8 +289,23 @@ void PhysicsEngine::Draw() const
         body->Draw(m_pRenderer);
     }
 
+    SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
+    //SDL_RenderDrawPointF(m_pRenderer, m_DataCollision.start.x, m_DataCollision.start.y);
+    //SDL_RenderDrawPointF(m_pRenderer, m_DataCollision.end.x, m_DataCollision.end.y);
+
+    const SDL_FRect startPoint = SDL_FRect{ m_DataCollision.start.x - 2.f, m_DataCollision.start.y - 2.f, 4.f, 4.f };
+    const SDL_FRect endPoint = SDL_FRect{ m_DataCollision.end.x - 2.f, m_DataCollision.end.y - 2.f, 4.f, 4.f };
+
+    SDL_RenderDrawRectF(m_pRenderer, &startPoint);
+    SDL_RenderDrawRectF(m_pRenderer, &endPoint);
+
+    //std::cout << m_DataCollision.normal.x << ", " << m_DataCollision.normal.x << '\n';
+
+    SDL_RenderDrawLineF(m_pRenderer, m_DataCollision.start.x, m_DataCollision.start.y, m_DataCollision.start.x + m_DataCollision.normal.x * 15.f, m_DataCollision.start.y + m_DataCollision.normal.y * 15.f);
 
     m_FontFPS->Draw();
+    m_FontFPSFixed->Draw();
+    m_FontAmountBodies->Draw();
 
     //Push the buffer
     SDL_RenderPresent(m_pRenderer);

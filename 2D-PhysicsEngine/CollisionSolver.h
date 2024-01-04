@@ -1,6 +1,7 @@
 #pragma once
 #include "glm/vec2.hpp"
 
+class Polygon;
 class RigidBody;
 
 
@@ -29,8 +30,26 @@ public:
 		float depth{};
 	};
 
+	struct CollisionDataPoly
+	{
+		glm::vec2 seperationAxis{};
+		glm::vec2 projectedPoint{};
+		float seperationLength{};
+	};
+
 	static bool IsColliding(RigidBody* a, RigidBody* b, CollisionData& data);
 
 	static bool CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& data);
+	static bool PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data);
+
+	static float Cross(const glm::vec2& a, const glm::vec2& b);
+private:
+
+	static void ProjectionMethod(const CollisionData& data);
+
+	static void ImpulseMethod(const CollisionData& data);
+
+	static void FindLeastSeperation(const Polygon* a, const Polygon* b, CollisionDataPoly& data);
+
 };
 

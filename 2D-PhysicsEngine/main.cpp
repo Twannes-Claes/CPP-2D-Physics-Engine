@@ -8,9 +8,5 @@ int wmain()
 	
     engine1->Run();
 
-	//PhysicsEngine engine = { 800, 600, 0.02f };
-	//
-	//engine.Run();
-
 	return 0;
 }

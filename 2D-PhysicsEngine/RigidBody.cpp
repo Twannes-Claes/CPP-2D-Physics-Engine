@@ -6,9 +6,13 @@
 #include "glm/gtx/norm.hpp"
 #pragma warning(pop)
 
-RigidBody::RigidBody(const Shape& colliderShape, const float x, const float y, float const mass):
- Pos(x, y),
- Mass(mass)
+const float RigidBody::m_PI2 = static_cast<float>(M_PI) * 2.f;
+
+RigidBody::RigidBody(const Shape& colliderShape, const float x, const float y, float const mass, const float restitution, const float rot) :
+	Pos(x, y),
+	Mass(mass),
+	Rot(rot),
+	Restitution(restitution)
 {
 	//Implemented prototype pattern for easy transfer of shapes
 	//No need to std::make_unique<ShapeType>(all the arguments)
@@ -31,6 +35,8 @@ RigidBody::RigidBody(const Shape& colliderShape, const float x, const float y, f
 
 	if (I > 0.f) m_InvI = 1 / I;
 
+	m_ColliderShape->UpdatePosRot(Rot, Pos);
+	m_ColliderShape->UpdateVertices();
 }
 
 RigidBody::~RigidBody() = default;
@@ -67,11 +73,11 @@ void RigidBody::Update(const float deltaTime)
 	//Euler integration of rotation acceleration
 	m_AngularAcceleration = m_AccumulatedTorque * m_InvI;
 
-	m_AngularVelocity += m_AngularAcceleration * deltaTime;
+	AngularVelocity += m_AngularAcceleration * deltaTime;
 
-	Rot += m_AngularVelocity * deltaTime;
+	Rot += AngularVelocity * deltaTime;
 
-	Rot = std::fmodf(Rot, static_cast<float>(M_PI) * 2.f);
+	Rot = std::fmodf(Rot, m_PI2);
 
 	//Clear torque force
 	m_AccumulatedTorque = 0;

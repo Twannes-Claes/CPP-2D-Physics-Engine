@@ -9,7 +9,7 @@ class RigidBody
 {
 public:
 
-	RigidBody(const Shape& colliderShape, float x, float y, float mass);
+	RigidBody(const Shape& colliderShape, float x, float y, float mass, float restitution = 1.f, float rot = 0.f);
 
 	~RigidBody();
 
@@ -20,6 +20,18 @@ public:
 
 	void AddForce(const glm::vec2& force) { m_AccumulatedForce += force; }
 	void AddTorque(const float torque) { m_AccumulatedTorque += torque; }
+
+	//Linear impulse
+	void AddImpulse(const glm::vec2& impulse) { if (IsStatic()) return; Velocity += impulse * InvMass; }
+
+	//Rotational impulse
+	void AddImpulse(const glm::vec2& impulse, const glm::vec2& dir)
+	{
+		if(IsStatic()) return;
+
+		Velocity += impulse * InvMass;
+		AngularVelocity += ((dir.x * impulse.y) - (dir.y * impulse.x)) / I;
+	}
 
 	void ClearForces() { m_AccumulatedForce = glm::vec2{}; }
 	void ClearTorque() { m_AccumulatedTorque = 0; }
@@ -44,8 +56,11 @@ public:
 
 	//Publically accesable angular motion variables
 	float Rot{};
+	float AngularVelocity{};
 
 	float I{}; //Moment Of Inertia(Inertia)
+
+	float Restitution{1.f};
 
 	bool colliding = false;
 
@@ -61,11 +76,10 @@ private:
 
 	//Angular variables
 	float m_AccumulatedTorque{};
-
-	float m_AngularVelocity{};
 	float m_AngularAcceleration{};
 
 	float m_InvI{};
 
+	static const float m_PI2;
 };
 

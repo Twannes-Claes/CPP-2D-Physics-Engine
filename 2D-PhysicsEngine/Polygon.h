@@ -21,6 +21,10 @@ public:
 
 	float GetMomentOfInteria(const float) const override { return 1000.f; }
 
+	const std::vector<SDL_FPoint>& GetVertices() const { return m_TransformedPoints; }
+
+	glm::vec2 GetEdge(const uint32_t index) const;
+
 	Polygon(const Polygon& other) = delete;
 	Polygon(Polygon&& other) = delete;
 	Polygon& operator=(const Polygon& other) = delete;

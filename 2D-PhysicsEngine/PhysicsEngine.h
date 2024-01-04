@@ -3,8 +3,11 @@
 #include <memory>
 #include <vector>
 
+#include "CollisionSolver.h"
+
 class RigidBody;
 class Font;
+class CollisionSolver;
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -32,6 +35,8 @@ private:
 	std::vector<std::unique_ptr<RigidBody>> m_RigidBodys;
 
 	std::unique_ptr<Font> m_FontFPS;
+	std::unique_ptr<Font> m_FontFPSFixed;
+	std::unique_ptr<Font> m_FontAmountBodies;
 
 	//Physics Settings
 	const float m_PixelsPerMeter = 25;
@@ -39,10 +44,15 @@ private:
 	const float m_Gravity = 9.81f;
 	const float m_PhysicsTimeStep;
 
+	CollisionSolver::CollisionData m_DataCollision;
+
 	//FPS
 	float m_DeltaTime = 0;
 	float m_DeltaLag = 0;
 	float m_FrameCount = 0;
+
+	float m_fpsTimer = 0;
+	float m_DurationFixed = 0;
 
 	void FixedUpdate();
 

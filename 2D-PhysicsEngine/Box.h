@@ -16,7 +16,7 @@ public:
 
 	virtual std::unique_ptr<Shape> Clone() const override;
 
-	virtual Type GetType()  const override { return Type::Box; }
+	//virtual Type GetType()  const override { return Type::Box; }
 
 	float GetMomentOfInteria(const float mass) const override;
 

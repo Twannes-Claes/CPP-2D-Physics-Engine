@@ -13,6 +13,16 @@ std::unique_ptr<Shape> Polygon::Clone() const
 	return std::make_unique<Polygon>(m_Vertices);
 }
 
+glm::vec2 Polygon::GetEdge(const uint32_t index) const
+{
+	const uint32_t nextI = (index + 1) % m_Vertices.size();
+
+    const glm::vec2 first{ m_TransformedPoints[index].x, m_TransformedPoints[index].y };
+    const glm::vec2 second{ m_TransformedPoints[nextI].x, m_TransformedPoints[nextI].y };
+
+    return second - first;
+}
+
 void Polygon::UpdateVertices()
 {
     //Precompute rotation matrix
