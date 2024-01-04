@@ -8,11 +8,12 @@
 
 const float RigidBody::m_PI2 = static_cast<float>(M_PI) * 2.f;
 
-RigidBody::RigidBody(const Shape& colliderShape, const float x, const float y, float const mass, const float restitution, const float rot) :
-	Pos(x, y),
-	Mass(mass),
-	Rot(rot),
-	Restitution(restitution)
+RigidBody::RigidBody(const Shape& colliderShape, const float x, const float y, float const mass, const float restitution, const float friction, const float rot) :
+Pos(x, y),
+Mass(mass),
+Rot(rot),
+Elasticity(restitution),
+Friction(friction)
 {
 	//Implemented prototype pattern for easy transfer of shapes
 	//No need to std::make_unique<ShapeType>(all the arguments)
@@ -31,15 +32,31 @@ RigidBody::RigidBody(const Shape& colliderShape, const float x, const float y, f
 
 	I = m_ColliderShape->GetMomentOfInteria(mass);
 
-	m_InvI = 0;
+	InvI = 0;
 
-	if (I > 0.f) m_InvI = 1 / I;
+	if (I > 0.f) InvI = 1 / I;
 
 	m_ColliderShape->UpdatePosRot(Rot, Pos);
 	m_ColliderShape->UpdateVertices();
 }
 
+RigidBody::RigidBody(const Shape& colliderShape, const int x, const int y, const float mass, const float restitution, const float friction, const float rot)
+:RigidBody(colliderShape, static_cast<float>(x), static_cast<float>(y), mass, restitution, friction, rot){}
+
 RigidBody::~RigidBody() = default;
+
+void RigidBody::AddImpulse(const glm::vec2& impulse)
+{
+	if (IsStatic()) return; Velocity += impulse * InvMass;
+}
+
+void RigidBody::AddImpulse(const glm::vec2& impulse, const glm::vec2& dir)
+{
+	if(IsStatic()) return;
+
+	Velocity += impulse * InvMass;
+	AngularVelocity += ((dir.x * impulse.y) - (dir.y * impulse.x)) * InvI;
+}
 
 void RigidBody::GenerateDrag(const float dragCoefficient)
 {
@@ -71,7 +88,7 @@ void RigidBody::Update(const float deltaTime)
 	m_AccumulatedForce = glm::vec2{};
 
 	//Euler integration of rotation acceleration
-	m_AngularAcceleration = m_AccumulatedTorque * m_InvI;
+	m_AngularAcceleration = m_AccumulatedTorque * InvI;
 
 	AngularVelocity += m_AngularAcceleration * deltaTime;
 

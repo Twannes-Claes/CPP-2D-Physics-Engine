@@ -98,7 +98,6 @@ bool CollisionSolver::PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data
 	
 	if(aInfo.seperationLength > bInfo.seperationLength)
 	{
-		std::cout << "a to b\n";
 		data.depth = -aInfo.seperationLength;
 		data.normal = glm::normalize(glm::vec2{ -aInfo.seperationAxis.y, aInfo.seperationAxis.x });
 	
@@ -107,7 +106,6 @@ bool CollisionSolver::PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data
 	}
 	else
 	{
-		std::cout << "b to a\n";
 		data.depth = -bInfo.seperationLength;
 		//data.normal = -glm::normalize(glm::vec2{ -bInfo.seperationAxis.y, bInfo.seperationAxis.x });
 		data.normal = glm::normalize(glm::vec2{ bInfo.seperationAxis.y, -bInfo.seperationAxis.x });
@@ -118,7 +116,7 @@ bool CollisionSolver::PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data
 	
 	ProjectionMethod(data);
 	
-	//ImpulseMethod(data);
+	ImpulseMethod(data);
 
 	return true;
 }
@@ -152,28 +150,38 @@ void CollisionSolver::ImpulseMethod(const CollisionData& data)
 	//This makes ojbects have a kind of relatio of sticking to eachother
 	//if (relVelDotNormal > 0) return;
 
-	//Now calculate relative velocity with angular velocity
-	const glm::vec2 ra = data.end - data.a->Pos;
-	const glm::vec2 rb = data.start - data.b->Pos;
+	//get mininum Elasticity and friction
+	const float e = std::min(data.a->Elasticity, data.b->Elasticity);
+	const float f = std::min(data.a->Friction, data.b->Friction);
 
-	const glm::vec2 va = data.a->Velocity + glm::vec2{ -data.a->AngularVelocity * ra.y, data.a->AngularVelocity * ra.x };
-	const glm::vec2 vb = data.b->Velocity + glm::vec2{ -data.b->AngularVelocity * rb.y, data.b->AngularVelocity * rb.x };
+	//Now calculate relative velocity with angular velocity
+	const glm::vec2 dirA = data.end - data.a->Pos;
+	const glm::vec2 dirB = data.start - data.b->Pos;
+
+	const glm::vec2 vA = data.a->Velocity + glm::vec2{ -data.a->AngularVelocity * dirA.y, data.a->AngularVelocity * dirA.x };
+	const glm::vec2 vB = data.b->Velocity + glm::vec2{ -data.b->AngularVelocity * dirB.y, data.b->AngularVelocity * dirB.x };
 
 	//const float relVelDotNormal = glm::dot(va - vb, data.normal);
-	const float relVelDotNormal = glm::dot(va - vb, data.normal);
+	const glm::vec2 relVel = vA - vB;
 
-	//Elasticity
-	const float e = std::min(data.a->Restitution, data.b->Restitution);
+	const float relVelDotNormal = glm::dot(relVel, data.normal);
 
+	//Formula https://gamedev.stackexchange.com/questions/157537/impulse-resolution-for-purely-rotational-collisions-relative-linear-velocity
 	//Calculate the amount of impulse(scalar)
-	const float j = -(1 - e) * relVelDotNormal / ((data.a->InvMass + data.b->InvMass) + ((Cross(ra, data.normal) * Cross(ra, data.normal)) / data.a->I) + ((Cross(rb, data.normal) * Cross(rb, data.normal)) / data.b->I));
+	const float impulseLinearForce = -(1 + e) * relVelDotNormal / ((data.a->InvMass + data.b->InvMass) + ((Cross(dirA, data.normal) * Cross(dirA, data.normal)) * data.a->InvI) + ((Cross(dirB, data.normal) * Cross(dirB, data.normal)) * data.b->InvI));
 
-	//Calculate full impulse force
-	const glm::vec2 impulse = data.normal * j;
+	//Now rotational impulse along tangent
+	const glm::vec2 tangent = glm::vec2{ -data.normal.y, data.normal.x };
+	const float relVelDotTangent = glm::dot(relVel, tangent);
+
+	const float impulseTangentForce = f * -(1 + e) * relVelDotTangent / ((data.a->InvMass + data.b->InvMass) + ((Cross(dirA, tangent) * Cross(dirA, tangent)) * data.a->InvI) + ((Cross(dirB, tangent) * Cross(dirB, tangent)) * data.b->InvI));
+
+	//Calculate full impulse with linear and rotational
+	const glm::vec2 impulse = (data.normal * impulseLinearForce) + (tangent * impulseTangentForce);
 
 	//Add the impulses
-	data.a->AddImpulse(impulse, ra);
-	data.b->AddImpulse(-impulse, rb);
+	data.a->AddImpulse(impulse, dirA);
+	data.b->AddImpulse(-impulse, dirB);
 }
 
 void CollisionSolver::FindLeastSeperation(const Polygon* a, const Polygon* b, CollisionDataPoly& data)

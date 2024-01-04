@@ -9,7 +9,8 @@ class RigidBody
 {
 public:
 
-	RigidBody(const Shape& colliderShape, float x, float y, float mass, float restitution = 1.f, float rot = 0.f);
+	RigidBody(const Shape& colliderShape, float x, float y, float mass, float restitution = 0.5f, float friction = 0.5f, float rot = 0.f);
+	RigidBody(const Shape& colliderShape, int x, int y, float mass, float restitution = 0.5f, float friction = 0.5f, float rot = 0.f);
 
 	~RigidBody();
 
@@ -22,16 +23,10 @@ public:
 	void AddTorque(const float torque) { m_AccumulatedTorque += torque; }
 
 	//Linear impulse
-	void AddImpulse(const glm::vec2& impulse) { if (IsStatic()) return; Velocity += impulse * InvMass; }
+	void AddImpulse(const glm::vec2& impulse);
 
 	//Rotational impulse
-	void AddImpulse(const glm::vec2& impulse, const glm::vec2& dir)
-	{
-		if(IsStatic()) return;
-
-		Velocity += impulse * InvMass;
-		AngularVelocity += ((dir.x * impulse.y) - (dir.y * impulse.x)) / I;
-	}
+	void AddImpulse(const glm::vec2& impulse, const glm::vec2& dir);
 
 	void ClearForces() { m_AccumulatedForce = glm::vec2{}; }
 	void ClearTorque() { m_AccumulatedTorque = 0; }
@@ -59,12 +54,16 @@ public:
 	float AngularVelocity{};
 
 	float I{}; //Moment Of Inertia(Inertia)
+	float InvI{};
 
-	float Restitution{1.f};
+	//Elasticity and friction
+	float Elasticity{};
+	float Friction{};
 
 	bool colliding = false;
 
 private:
+
 
 	//Pointer referencing the collider of the rigidbody
 	std::unique_ptr<Shape> m_ColliderShape = nullptr;
@@ -78,7 +77,6 @@ private:
 	float m_AccumulatedTorque{};
 	float m_AngularAcceleration{};
 
-	float m_InvI{};
 
 	static const float m_PI2;
 };
