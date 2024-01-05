@@ -34,17 +34,40 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     m_FontFPSFixed = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 0, 0, 255 }, 100, 10, m_pRenderer);
     m_FontAmountBodies = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 255, 0, 255 }, 750, 10, m_pRenderer);
 
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(150.f), 400.f, 300.f, -1.f, 1.f));
+    //Static circle in the middle
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 400.f, 300.f, 1.f, 1.f));
 
-    //Sloped box
+    ////Sloped box
     m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(50.f, 50.f), 400.f, 300.f, 0.f, 0.5f, 0.5f, static_cast<float>(M_PI) * 0.45f));
-
+    //
     //Bottom floor
     m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(800.f, 30.f), 400.f, 580.f, 0.f, 0.2f, 0.2f));
-
+    
     //Sidewalls
     m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 600.f), 15.f, 260.f, 0.f, 0.2f, 0.2f));
     m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 600.f), 784.f, 260.f, 0.f, 0.2f, 0.2f));
+
+    //https://www.jeffreythompson.org/collision-detection/poly-poly.php
+    //Randomly generated polygons
+    //// set position of the pentagon's vertices
+    //float angle = TWO_PI / pentagon.length;
+    //for (int i = 0; i < pentagon.length; i++) {
+    //    float a = angle * i;
+    //    float x = 300 + cos(a) * 100;
+    //    float y = 200 + sin(a) * 100;
+    //    pentagon[i] = new PVector(x, y);
+    //}
+    //
+    //// and create the random polygon
+    //float a = 0;
+    //int i = 0;
+    //while (a < 360) {
+    //    float x = cos(radians(a)) * random(30, 50);
+    //    float y = sin(radians(a)) * random(30, 50);
+    //    randomPoly[i] = new PVector(x, y);
+    //    a += random(15, 40);
+    //    i += 1;
+    //}
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -127,10 +150,10 @@ void PhysicsEngine::Run()
 	       	   break;
                case SDL_MOUSEMOTION:
                {
-                   //int x, y;
-                   //SDL_GetMouseState(&x, &y);
-                   //m_RigidBodys[1]->Pos.x = static_cast<float>(x);
-                   //m_RigidBodys[1]->Pos.y = static_cast<float>(y);
+                   int x, y;
+                   SDL_GetMouseState(&x, &y);
+                   m_RigidBodys[0]->Pos.x = static_cast<float>(x);
+                   m_RigidBodys[0]->Pos.y = static_cast<float>(y);
                    break;
                }
                default:
@@ -196,7 +219,7 @@ void PhysicsEngine::FixedUpdate()
             //Gravity
             body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
             
-            body->GenerateDrag(0.002f);
+            //body->GenerateDrag(0.002f);
 
             //body->AddTorque(200.f);
 

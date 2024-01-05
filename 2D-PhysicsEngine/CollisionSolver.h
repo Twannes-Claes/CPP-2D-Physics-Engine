@@ -39,11 +39,15 @@ public:
 
 	static bool IsColliding(RigidBody* a, RigidBody* b, CollisionData& data);
 
+
+	inline static float Cross(const glm::vec2& a, const glm::vec2& b);
+private:
+
 	static bool CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& data);
+
 	static bool PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data);
 
-	static float Cross(const glm::vec2& a, const glm::vec2& b);
-private:
+	static bool CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, CollisionData& data);
 
 	static void ProjectionMethod(const CollisionData& data);
 

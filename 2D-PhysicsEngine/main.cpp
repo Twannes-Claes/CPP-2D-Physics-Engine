@@ -1,12 +1,10 @@
-#include <memory>
-
 #include "PhysicsEngine.h"
 
-int wmain()
+int main()
 {
-	const std::unique_ptr<PhysicsEngine> engine1 = std::make_unique<PhysicsEngine>(800, 600, 0.0167f);
+	const std::unique_ptr<PhysicsEngine> engine = std::make_unique<PhysicsEngine>(800, 600, 0.0167f);
 	
-    engine1->Run();
+    engine->Run();
 
 	return 0;
 }

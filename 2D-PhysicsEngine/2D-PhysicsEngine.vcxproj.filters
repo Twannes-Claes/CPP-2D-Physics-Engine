@@ -85,6 +85,8 @@
     <Font Include="ARCADECLASSIC.TTF">
       <Filter>Resource Files</Filter>
     </Font>
-    <Font Include="Burbank Big Condensed Black.otf" />
+    <Font Include="Burbank Big Condensed Black.otf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>

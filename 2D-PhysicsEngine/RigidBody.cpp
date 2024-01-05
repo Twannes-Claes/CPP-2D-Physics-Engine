@@ -15,17 +15,15 @@ Rot(rot),
 Elasticity(restitution),
 Friction(friction)
 {
-	//Implemented prototype pattern for easy transfer of shapes
-	//No need to std::make_unique<ShapeType>(all the arguments)
-	//Now every shape class has a function clone that returns an unique pointer with its own arguments
-	//Learned this in programming 4 https://gameprogrammingpatterns.com/prototype.html
-
 	//Get the inverse of the mass
 	InvMass = 0;
 	
 	if (mass > 0) InvMass = 1 / mass;
 
-	//Get the unique pointer cloned by the Shape
+	//Implemented prototype pattern for easy transfer of shapes
+	//No need to std::make_unique<ShapeType>(all the arguments)
+	//Now every shape class has a function clone that returns an unique pointer with its own arguments
+	//Learned this in programming 4 https://gameprogrammingpatterns.com/prototype.html
 	m_ColliderShape = colliderShape.Clone();
 
 	m_ColliderShape->UpdatePosRot(0, Pos);
