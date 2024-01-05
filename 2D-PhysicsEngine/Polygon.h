@@ -19,18 +19,18 @@ public:
 
 	virtual Type GetType()  const override { return Type::Polygon; }
 
-	float GetMomentOfInteria(const float) const override { return 1000.f; }
+	float GetMomentOfInteria(const float) const override { return 5000.f; }
 
 	const std::vector<SDL_FPoint>& GetVertices() const { return m_TransformedPoints; }
 
-	glm::vec2 GetEdge(const uint32_t index) const;
+	virtual glm::vec2 GetEdge(const uint32_t index) const;
 
 	Polygon(const Polygon& other) = delete;
 	Polygon(Polygon&& other) = delete;
 	Polygon& operator=(const Polygon& other) = delete;
 	Polygon& operator=(Polygon&& other) = delete;
 
-private:
+protected:
 
 	const std::vector<SDL_FPoint> m_Vertices{};
 	std::vector<SDL_FPoint> m_TransformedPoints{};

@@ -20,7 +20,7 @@ glm::vec2 Polygon::GetEdge(const uint32_t index) const
     const glm::vec2 first{ m_TransformedPoints[index].x, m_TransformedPoints[index].y };
     const glm::vec2 second{ m_TransformedPoints[nextI].x, m_TransformedPoints[nextI].y };
 
-    return second - first;
+    return first - second;
 }
 
 void Polygon::UpdateVertices()
@@ -41,5 +41,7 @@ void Polygon::UpdateVertices()
 
 void Polygon::DrawShape(SDL_Renderer* pRenderer)
 {
+    SDL_RenderDrawPointF(pRenderer, m_RigidBodyPos.x, m_RigidBodyPos.y);
 	SDL_RenderDrawLinesF(pRenderer, m_TransformedPoints.data(), static_cast<int>(m_TransformedPoints.size()));
+	SDL_RenderDrawLineF(pRenderer, m_TransformedPoints.back().x, m_TransformedPoints.back().y, m_TransformedPoints.front().x, m_TransformedPoints.front().y);
 }

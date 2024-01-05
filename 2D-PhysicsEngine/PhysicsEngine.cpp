@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <random>
 #include <string>
 
 #include "SDL2/include/SDL.h"
@@ -13,6 +14,7 @@
 #include "Circle.h"
 #include "Box.h"
 #include "Polygon.h"
+#include "glm/trigonometric.hpp"
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
@@ -34,40 +36,31 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     m_FontFPSFixed = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 0, 0, 255 }, 100, 10, m_pRenderer);
     m_FontAmountBodies = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 255, 0, 255 }, 750, 10, m_pRenderer);
 
+    std::vector<SDL_FPoint> points{};
+
+    points.push_back(SDL_FPoint{ 20.f, 60.f });
+    points.push_back(SDL_FPoint{ -40.f, 20.f });
+    points.push_back(SDL_FPoint{ -20.f, -60.f });
+    points.push_back(SDL_FPoint{ 20.f, -60.f });
+    points.push_back(SDL_FPoint{ 40.f, 20.f });
+
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 10, 500, 5.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 400, 500, 5.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6, 8), 40.f)), 10, 500, 5.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6, 8), 30.f)), 400, 300, 1.f));
+
     //Static circle in the middle
     m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 400.f, 300.f, 1.f, 1.f));
-
-    ////Sloped box
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(50.f, 50.f), 400.f, 300.f, 0.f, 0.5f, 0.5f, static_cast<float>(M_PI) * 0.45f));
-    //
-    //Bottom floor
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(800.f, 30.f), 400.f, 580.f, 0.f, 0.2f, 0.2f));
     
-    //Sidewalls
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 600.f), 15.f, 260.f, 0.f, 0.2f, 0.2f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 600.f), 784.f, 260.f, 0.f, 0.2f, 0.2f));
-
-    //https://www.jeffreythompson.org/collision-detection/poly-poly.php
-    //Randomly generated polygons
-    //// set position of the pentagon's vertices
-    //float angle = TWO_PI / pentagon.length;
-    //for (int i = 0; i < pentagon.length; i++) {
-    //    float a = angle * i;
-    //    float x = 300 + cos(a) * 100;
-    //    float y = 200 + sin(a) * 100;
-    //    pentagon[i] = new PVector(x, y);
-    //}
+    ////Sloped box
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(50.f, 50.f), 400.f, 300.f, 0.f, 0.5f, 0.5f, static_cast<float>(M_PI) * 0.45f));
     //
-    //// and create the random polygon
-    //float a = 0;
-    //int i = 0;
-    //while (a < 360) {
-    //    float x = cos(radians(a)) * random(30, 50);
-    //    float y = sin(radians(a)) * random(30, 50);
-    //    randomPoly[i] = new PVector(x, y);
-    //    a += random(15, 40);
-    //    i += 1;
-    //}
+	////Bottom floor
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(400.f, 30.f), 400.f, 600.f, 0.f, 0.2f, 0.2f));
+    //
+    ////Sidewalls
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 300.f), 15.f, 265.f, 0.f, 0.2f, 0.2f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 300.f), 784.f, 265.f, 0.f, 0.2f, 0.2f));
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -106,6 +99,17 @@ void PhysicsEngine::Run()
                         	   quit = true;
                         	   break;
 	                    }
+						case SDLK_UP:
+	                    {
+                            m_IndexCurr = (m_IndexCurr + 1) % m_RigidBodys.size();
+
+                            while(m_RigidBodys[m_IndexCurr]->IsStatic())
+                            {
+                                m_IndexCurr = (m_IndexCurr + 1) % m_RigidBodys.size();
+                            }
+
+                            break;
+	                    }
                         //case SDLK_UP:
                         //{
                         //    yOffset -= m_PhysicsTimeStep * 100;
@@ -134,26 +138,46 @@ void PhysicsEngine::Run()
 	           case SDL_MOUSEBUTTONDOWN:
 		       {
                     //Setup for mouse movement to spawn objects
-                   int x{}, y{};
-                   SDL_GetMouseState(&x, &y);
+                   SDL_GetMouseState(&m_MouseX, &m_MouseY);
 
-                   if (event.button.button == SDL_BUTTON_LEFT)
+                   switch (event.button.button )
                    {
-						m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(15.f), static_cast<float>(x), static_cast<float>(y), 1.f, 0.5f));
-                   }
-                   else if(event.button.button == SDL_BUTTON_RIGHT)
-                   {
-                       constexpr float size = 15.f;
-                       m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(size, size), x, y, 1.f, 0.1f, 0.2f));
+                       case SDL_BUTTON_LEFT:
+	                   {
+						  m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(15.f), static_cast<float>(m_MouseX), static_cast<float>(m_MouseY), 1.f, 0.5f));
+	                   }
+                       break;
+                       case SDL_BUTTON_RIGHT:
+	                   {
+                       	  constexpr float size = 25.f;
+						  m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(size, size), m_MouseX, m_MouseY, 1.f, 0.1f, 0.2f));
+	                   }
+                       break;
+                       case SDL_BUTTON_MIDDLE:
+                       {
+                           //std::vector<SDL_FPoint> points{};
+                           //
+                           //points.push_back(SDL_FPoint{ 20.f, 60.f });
+                           //points.push_back(SDL_FPoint{ -40.f, 20.f });
+                           //points.push_back(SDL_FPoint{ -20.f, -60.f });
+                           //points.push_back(SDL_FPoint{ 20.f, -60.f });
+                           //points.push_back(SDL_FPoint{ 40.f, 20.f });
+                           //
+                           //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), m_MouseX, m_MouseY, 5.f));
+                           m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6,8), Random(20.f,50.f))), m_MouseX, m_MouseY, 5.f));
+                       }
+                       break;
+						default:
+                            break;
                    }
 		       }
 	       	   break;
                case SDL_MOUSEMOTION:
                {
-                   int x, y;
-                   SDL_GetMouseState(&x, &y);
-                   m_RigidBodys[0]->Pos.x = static_cast<float>(x);
-                   m_RigidBodys[0]->Pos.y = static_cast<float>(y);
+                   //int x, y;
+                   SDL_GetMouseState(&m_MouseX, &m_MouseY);
+                   m_RigidBodys[m_IndexCurr]->Pos.x = static_cast<float>(m_MouseX);
+                   m_RigidBodys[m_IndexCurr]->Pos.y = static_cast<float>(m_MouseY);
                    break;
                }
                default:
@@ -217,8 +241,8 @@ void PhysicsEngine::FixedUpdate()
             //body->AddForce(glm::vec2{ 20.f, 0.f });
 
             //Gravity
-            body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
-            
+            //body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
+            //
             //body->GenerateDrag(0.002f);
 
             //body->AddTorque(200.f);
@@ -316,4 +340,32 @@ void PhysicsEngine::Draw() const
 
     //Push the buffer
     SDL_RenderPresent(m_pRenderer);
+}
+
+float PhysicsEngine::Random(const float min, const float max) const
+{
+    return min + static_cast<float>(rand()) / RAND_MAX * (max - min);
+}
+
+int PhysicsEngine::Random(const int min, const int max) const
+{
+    return min + rand() / RAND_MAX * (max - min);
+}
+
+std::vector<SDL_FPoint> PhysicsEngine::GenerateConvexPolygon(const int numVertices, const float radius) const
+{
+    std::vector<SDL_FPoint> points;
+
+    for (int i = 0; i < numVertices; ++i) 
+    {
+        float angle = static_cast<float>(i) * (2.f * static_cast<float>(M_PI)) / static_cast<float>(numVertices);
+        angle += (rand() % 60 - 30) * (static_cast<float>(M_PI) / 180.f);
+
+        const float x = radius * std::cos(angle);
+        const float y = radius * std::sin(angle);
+
+        points.push_back({ x, y });
+    }
+
+    return points;
 }

@@ -41,6 +41,7 @@ public:
 
 
 	inline static float Cross(const glm::vec2& a, const glm::vec2& b);
+
 private:
 
 	static bool CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& data);

@@ -14,6 +14,16 @@ std::unique_ptr<Shape> Box::Clone() const
 	return std::make_unique<Box>(m_Dimensions);
 }
 
+glm::vec2 Box::GetEdge(const uint32_t index) const
+{
+	const uint32_t nextI = (index + 1) % m_Vertices.size();
+
+	const glm::vec2 first{ m_TransformedPoints[index].x, m_TransformedPoints[index].y };
+	const glm::vec2 second{ m_TransformedPoints[nextI].x, m_TransformedPoints[nextI].y };
+
+	return second - first;
+}
+
 float Box::GetMomentOfInteria(const float mass) const
 {
 	//I = 1/12 * (w^2 * h^2) * mass
@@ -30,7 +40,6 @@ std::vector<SDL_FPoint> Box::GetBoxVertices(const glm::vec2& dimensions) const
 	points.push_back({ dimensions.x, dimensions.y });
 	points.push_back({ dimensions.x, -dimensions.y });
 	points.push_back({ -dimensions.x, -dimensions.y });
-	points.push_back({ -dimensions.x, dimensions.y });
 
 	return points;
 }

@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 #include <vector>
 
 #include "Polygon.h"
@@ -11,12 +11,11 @@ public:
 	explicit Box(const glm::vec2& dimensions);
 	virtual ~Box() override = default;
 
-	virtual void UpdateVertices() override { Polygon::UpdateVertices(); }
-	virtual void DrawShape(SDL_Renderer* pRenderer) override { Polygon::DrawShape(pRenderer); }
-
 	virtual std::unique_ptr<Shape> Clone() const override;
 
-	//virtual Type GetType()  const override { return Type::Box; }
+	virtual glm::vec2 GetEdge(const uint32_t index) const override;
+
+	virtual Type GetType()  const override { return Type::Box; }
 
 	float GetMomentOfInteria(const float mass) const override;
 

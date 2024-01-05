@@ -11,6 +11,7 @@ class CollisionSolver;
 
 struct SDL_Window;
 struct SDL_Renderer;
+struct SDL_FPoint;
 
 class PhysicsEngine
 {
@@ -46,6 +47,8 @@ private:
 
 	CollisionSolver::CollisionData m_DataCollision;
 
+	int m_IndexCurr{};
+
 	//FPS
 	float m_DeltaTime = 0;
 	float m_DeltaLag = 0;
@@ -54,7 +57,15 @@ private:
 	float m_fpsTimer = 0;
 	float m_DurationFixed = 0;
 
+	//MOusePos
+	int m_MouseX{}, m_MouseY{};
+
 	void FixedUpdate();
 
 	void Draw() const;
+
+	float Random(float min, float max) const;
+	int Random(int min, int max) const;
+
+	std::vector<SDL_FPoint> GenerateConvexPolygon(int numVertices, float radius) const;
 };

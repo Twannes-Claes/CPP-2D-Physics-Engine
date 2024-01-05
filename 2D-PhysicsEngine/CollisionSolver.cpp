@@ -12,28 +12,28 @@
 
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
 {
-	const Shape* aShape = a->GetShape();
-	const Shape* bShape = b->GetShape();
-	 
-	const Shape::Type aType = aShape->GetType();
-	const Shape::Type bType = bShape->GetType();
+	const Shape::Type aType = a->GetShape()->GetType();
+	const Shape::Type bType = b->GetShape()->GetType();
 
 	if(aType == Shape::Type::Circle && bType == Shape::Type::Circle)
 	{
 		return CollisionSolver::CircleVSCircle(a, b, data);
 	}
 
-	if (aType == Shape::Type::Polygon && bType == Shape::Type::Polygon)
+	const bool isAPoly = aType == Shape::Type::Polygon || aType == Shape::Type::Box;
+	const bool isBPoly = bType == Shape::Type::Polygon || bType == Shape::Type::Box;
+
+	if (isAPoly && isBPoly)
 	{
 		return CollisionSolver::PolyVSPoly(a, b, data);
 	}
 
-	if(aType == Shape::Type::Circle && bType == Shape::Type::Polygon)
+	if(aType == Shape::Type::Circle && isBPoly)
 	{
 		return CollisionSolver::CircleVsPoly(b, a, data);
 	}
 
-	if (aType == Shape::Type::Polygon && bType == Shape::Type::Circle)
+	if (isAPoly && bType == Shape::Type::Circle)
 	{
 		return CollisionSolver::CircleVsPoly(a, b, data);
 	}
@@ -91,18 +91,22 @@ bool CollisionSolver::PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data
 
 	//If both seperations are less than zero they are colliding
 	//If at least one is not negative return false no need to check twice
-
 	CollisionDataPoly aInfo{};
 	CollisionDataPoly bInfo{};
 
 	FindLeastSeperation(aPoly, bPoly, aInfo);
 
-	if (aInfo.seperationLength >= 0) return false;
+	if (aInfo.seperationLength >= 0)
+	{
+		return false;
+	}
 
 	FindLeastSeperation(bPoly, aPoly, bInfo);
 
 	if (bInfo.seperationLength >= 0) return false;
 
+	//Other wise collision has been found
+	//FIll in the data
 	data.a = a;
 	data.b = b;
 	
@@ -141,7 +145,7 @@ void CollisionSolver::FindLeastSeperation(const Polygon* a, const Polygon* b, Co
 	const auto& verticesA = a->GetVertices();
 	const auto& verticesB = b->GetVertices();
 
-	for (uint32_t i = 0; i < verticesA.size() - 1; ++i)
+	for (uint32_t i = 0; i < verticesA.size(); ++i)
 	{
 		//Get the vertice
 		const glm::vec2 vA = { verticesA[i].x,verticesA[i].y };
@@ -155,11 +159,10 @@ void CollisionSolver::FindLeastSeperation(const Polygon* a, const Polygon* b, Co
 		float minSeperation = FLT_MAX;
 		glm::vec2 bestProjectedPoint{};
 
-		for (uint32_t j{}; j < verticesB.size() - 1; ++j)
+		for (uint32_t j{}; j < verticesB.size(); ++j)
 		{
 			//Get the vertice
 			const glm::vec2 vB = { verticesB[j].x, verticesB[j].y };
-
 			//get the least seperation of the vertices
 			const float projectionLength = glm::dot(vB - vA, n);
 			if (projectionLength < minSeperation)
@@ -195,7 +198,7 @@ bool CollisionSolver::CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, C
 
 	float distanceToEdge = std::numeric_limits<float>::lowest();
 
-	for (int i = 0; i < static_cast<int>(verticesPoly.size()) - 1; ++i)
+	for (int i = 0; i < static_cast<int>(verticesPoly.size()); ++i)
 	{
 		//Get the next vertice index
 		const int nextI = (i + 1) % static_cast<int>(verticesPoly.size());
@@ -205,7 +208,8 @@ bool CollisionSolver::CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, C
 
 		//Calculate the edge and get the normal
 		const glm::vec2 edge = poly->GetEdge(i);
-		const glm::vec2 n = glm::vec2{ -edge.y, edge.x };
+		//DONT FORGEOT TO FKING NORMALIZE YOUR FUCKING NORMALS TWANNES YOU RETARD 2 HOURS OF DEBUGGING JEEEZUS
+		const glm::vec2 n = glm::normalize(glm::vec2{ -edge.y, edge.x });
 
 		//Get the vector between the vertice and the circle
 		const glm::vec2 verticeToCircle = circleBody->Pos - currV;
@@ -232,6 +236,8 @@ bool CollisionSolver::CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, C
 
 			minCurrV = currV;
 			minNextV = nextV;
+
+			isCircleOutsidePoly = false;
 		}
 	}
 
@@ -332,9 +338,9 @@ bool CollisionSolver::CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, C
 		data.end = data.start + data.normal * data.depth;
 	}
 
-	//ProjectionMethod(data);
+	ProjectionMethod(data);
 	//
-	//ImpulseMethod(data);
+	ImpulseMethod(data);
 
 	return true;
 }
