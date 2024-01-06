@@ -44,23 +44,23 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     points.push_back(SDL_FPoint{ 20.f, -60.f });
     points.push_back(SDL_FPoint{ 40.f, 20.f });
 
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 10, 500, 5.f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 400, 500, 5.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 10, 500, 5.f));
+    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 400, 500, 5.f));
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6, 8), 40.f)), 10, 500, 5.f));
     //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6, 8), 30.f)), 400, 300, 1.f));
 
     //Static circle in the middle
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 400.f, 300.f, 1.f, 1.f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 200.f, 300.f, 0.f, 1.f));
     
-    ////Sloped box
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(50.f, 50.f), 400.f, 300.f, 0.f, 0.5f, 0.5f, static_cast<float>(M_PI) * 0.45f));
-    //
-	////Bottom floor
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(400.f, 30.f), 400.f, 600.f, 0.f, 0.2f, 0.2f));
-    //
-    ////Sidewalls
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 300.f), 15.f, 265.f, 0.f, 0.2f, 0.2f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 300.f), 784.f, 265.f, 0.f, 0.2f, 0.2f));
+    //Sloped box
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(50.f, 50.f), 500.f, 300.f, 0.f, 0.5f, 0.5f, static_cast<float>(M_PI) * 0.45f));
+    
+	//Bottom floor
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(400.f, 30.f), 400.f, 600.f, 0.f, 0.2f, 0.2f));
+    
+    //Sidewalls
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 300.f), 15.f, 265.f, 0.f, 0.2f, 0.2f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 300.f), 784.f, 265.f, 0.f, 0.2f, 0.2f));
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -174,10 +174,10 @@ void PhysicsEngine::Run()
 	       	   break;
                case SDL_MOUSEMOTION:
                {
-                   //int x, y;
-                   SDL_GetMouseState(&m_MouseX, &m_MouseY);
-                   m_RigidBodys[m_IndexCurr]->Pos.x = static_cast<float>(m_MouseX);
-                   m_RigidBodys[m_IndexCurr]->Pos.y = static_cast<float>(m_MouseY);
+                   ////int x, y;
+                   //SDL_GetMouseState(&m_MouseX, &m_MouseY);
+                   //m_RigidBodys[m_IndexCurr]->Pos.x = static_cast<float>(m_MouseX);
+                   //m_RigidBodys[m_IndexCurr]->Pos.y = static_cast<float>(m_MouseY);
                    break;
                }
                default:
@@ -241,7 +241,7 @@ void PhysicsEngine::FixedUpdate()
             //body->AddForce(glm::vec2{ 20.f, 0.f });
 
             //Gravity
-            //body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
+            body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
             //
             //body->GenerateDrag(0.002f);
 
