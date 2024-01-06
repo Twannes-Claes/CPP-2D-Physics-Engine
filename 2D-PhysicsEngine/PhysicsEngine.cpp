@@ -103,33 +103,13 @@ void PhysicsEngine::Run()
 	                    {
                             m_IndexCurr = (m_IndexCurr + 1) % m_RigidBodys.size();
 
-                            while(m_RigidBodys[m_IndexCurr]->IsStatic())
-                            {
-                                m_IndexCurr = (m_IndexCurr + 1) % m_RigidBodys.size();
-                            }
+                            //while(m_RigidBodys[m_IndexCurr]->IsStatic())
+                            //{
+                            //    m_IndexCurr = (m_IndexCurr + 1) % m_RigidBodys.size();
+                            //}
 
                             break;
 	                    }
-                        //case SDLK_UP:
-                        //{
-                        //    yOffset -= m_PhysicsTimeStep * 100;
-                        //    break;
-                        //}
-                        //case SDLK_DOWN:
-                        //{
-                        //    yOffset += m_PhysicsTimeStep * 100;
-                        //    break;
-                        //}
-                        //case SDLK_LEFT:
-                        //{
-                        //    xOffset -= m_PhysicsTimeStep * 100;
-                        //    break;
-                        //}
-                        //case SDLK_RIGHT:
-                        //{
-                        //    xOffset += m_PhysicsTimeStep * 100;
-                        //    break;
-                        //}
                         default:
                             break;
                    }
@@ -174,10 +154,12 @@ void PhysicsEngine::Run()
 	       	   break;
                case SDL_MOUSEMOTION:
                {
-                   ////int x, y;
-                   //SDL_GetMouseState(&m_MouseX, &m_MouseY);
-                   //m_RigidBodys[m_IndexCurr]->Pos.x = static_cast<float>(m_MouseX);
-                   //m_RigidBodys[m_IndexCurr]->Pos.y = static_cast<float>(m_MouseY);
+                   if (m_RigidBodys[m_IndexCurr]->IsStatic()) break;
+
+                   //int x, y;
+                   SDL_GetMouseState(&m_MouseX, &m_MouseY);
+                   m_RigidBodys[m_IndexCurr]->Pos.x = static_cast<float>(m_MouseX);
+                   m_RigidBodys[m_IndexCurr]->Pos.y = static_cast<float>(m_MouseY);
                    break;
                }
                default:
@@ -237,9 +219,6 @@ void PhysicsEngine::FixedUpdate()
 
         for (const auto& body : m_RigidBodys)
         {
-            //Add wind
-            //body->AddForce(glm::vec2{ 20.f, 0.f });
-
             //Gravity
             body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
             //
@@ -250,32 +229,6 @@ void PhysicsEngine::FixedUpdate()
             //Update
             body->Update(m_PhysicsTimeStep);
             body->colliding = false;
-
-            if (body->GetShape()->GetType() == Shape::Type::Circle)
-            {
-                const Circle* circleShape = dynamic_cast<Circle*>(body->GetShape());
-
-                if (body->Pos.x - circleShape->GetRadius() <= 0)
-                {
-                    body->Pos.x = circleShape->GetRadius();
-                    body->Velocity.x *= -0.9f;
-                }
-                else if (body->Pos.x + circleShape->GetRadius() >= 800)
-                {
-                    body->Pos.x = 800 - circleShape->GetRadius();
-                    body->Velocity.x *= -0.9f;
-                }
-                if (body->Pos.y - circleShape->GetRadius() <= 0)
-                {
-                    body->Pos.y = circleShape->GetRadius();
-                    body->Velocity.y *= -0.9f;
-                }
-                else if (body->Pos.y + circleShape->GetRadius() >= 600)
-                {
-                    body->Pos.y = 600 - circleShape->GetRadius();
-                    body->Velocity.y *= -0.9f;
-                }
-            }
         }
 
         const int bodiesSize = static_cast<int>(m_RigidBodys.size());
@@ -321,16 +274,12 @@ void PhysicsEngine::Draw() const
     }
 
     SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
-    //SDL_RenderDrawPointF(m_pRenderer, m_DataCollision.start.x, m_DataCollision.start.y);
-    //SDL_RenderDrawPointF(m_pRenderer, m_DataCollision.end.x, m_DataCollision.end.y);
 
     const SDL_FRect startPoint = SDL_FRect{ m_DataCollision.start.x - 2.f, m_DataCollision.start.y - 2.f, 4.f, 4.f };
     const SDL_FRect endPoint = SDL_FRect{ m_DataCollision.end.x - 2.f, m_DataCollision.end.y - 2.f, 4.f, 4.f };
 
     SDL_RenderDrawRectF(m_pRenderer, &startPoint);
     SDL_RenderDrawRectF(m_pRenderer, &endPoint);
-
-    //std::cout << m_DataCollision.normal.x << ", " << m_DataCollision.normal.x << '\n';
 
     SDL_RenderDrawLineF(m_pRenderer, m_DataCollision.start.x, m_DataCollision.start.y, m_DataCollision.start.x + m_DataCollision.normal.x * 15.f, m_DataCollision.start.y + m_DataCollision.normal.y * 15.f);
 

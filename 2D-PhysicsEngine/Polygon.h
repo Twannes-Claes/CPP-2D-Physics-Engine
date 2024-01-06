@@ -19,7 +19,9 @@ public:
 
 	virtual Type GetType()  const override { return Type::Polygon; }
 
-	float GetMomentOfInteria(const float) const override { return 5000.f; }
+	//Calculating this, goes way over my math skills
+	//https://stackoverflow.com/questions/41592034/computing-tensor-of-inertia-in-2d/41618980#41618980
+	float GetMomentOfInteria(const float) const override { return 1000.f; }
 
 	const std::vector<SDL_FPoint>& GetVertices() const { return m_TransformedPoints; }
 
