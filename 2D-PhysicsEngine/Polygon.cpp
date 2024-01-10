@@ -2,7 +2,8 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
-Polygon::Polygon(std::vector<SDL_FPoint> vertices):
+Polygon::Polygon(std::vector<SDL_FPoint> vertices, const float boundingRadius):
+Shape(boundingRadius),
 m_Vertices(std::move(vertices))
 {
     m_TransformedPoints.resize(m_Vertices.size());
@@ -10,7 +11,7 @@ m_Vertices(std::move(vertices))
 
 std::unique_ptr<Shape> Polygon::Clone() const
 {
-	return std::make_unique<Polygon>(m_Vertices);
+	return std::make_unique<Polygon>(m_Vertices, m_BoundingRadius);
 }
 
 glm::vec2 Polygon::GetEdge(const uint32_t index) const
@@ -21,6 +22,7 @@ glm::vec2 Polygon::GetEdge(const uint32_t index) const
     const glm::vec2 second{ m_TransformedPoints[nextI].x, m_TransformedPoints[nextI].y };
 
     return first - second;
+    //return second - first;
 }
 
 void Polygon::UpdateVertices()
@@ -44,4 +46,26 @@ void Polygon::DrawShape(SDL_Renderer* pRenderer)
     SDL_RenderDrawPointF(pRenderer, m_RigidBodyPos.x, m_RigidBodyPos.y);
 	SDL_RenderDrawLinesF(pRenderer, m_TransformedPoints.data(), static_cast<int>(m_TransformedPoints.size()));
 	SDL_RenderDrawLineF(pRenderer, m_TransformedPoints.back().x, m_TransformedPoints.back().y, m_TransformedPoints.front().x, m_TransformedPoints.front().y);
+
+    //Draw debug bounding circle
+    glm::vec2 xy1{};
+    glm::vec2 xy2{};
+    glm::vec2 angles{};
+
+    constexpr float angleBetween = 360.f / 32.f;
+
+    for (int i{}; i < 32; ++i)
+    {
+        angles.x = glm::radians(static_cast<float>(i) * angleBetween);
+
+        xy1.x = m_RigidBodyPos.x + m_BoundingRadius * glm::cos(angles.x);
+        xy1.y = m_RigidBodyPos.y + m_BoundingRadius * glm::sin(angles.x);
+
+        angles.y = glm::radians(static_cast<float>(i + 1) * angleBetween);
+
+        xy2.x = m_RigidBodyPos.x + m_BoundingRadius * glm::cos(angles.y);
+        xy2.y = m_RigidBodyPos.y + m_BoundingRadius * glm::sin(angles.y);
+
+        SDL_RenderDrawLineF(pRenderer, xy1.x, xy1.y, xy2.x, xy2.y);
+    }
 }

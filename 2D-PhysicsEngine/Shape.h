@@ -24,14 +24,15 @@ public:
 	virtual void UpdateVertices() = 0;
 	virtual void DrawShape(SDL_Renderer* pRenderer) = 0;
 
-	virtual float GetMomentOfInteria(const float mass) const = 0;
-	virtual Type GetType() const = 0;
-
+	inline virtual float GetMomentOfInteria(const float mass) const = 0;
+	inline virtual Type GetType() const = 0;
 
 	virtual std::unique_ptr<Shape> Clone() const = 0;
 
+	inline float GetBoundingRadius() const { return m_BoundingRadius; }
+
 	//TODO: Make this dirty flag
-	void UpdatePosRot(const float rigidBodyRot, const glm::vec2& pos) { m_RigidBodyRot = rigidBodyRot; m_RigidBodyPos = pos; }
+	inline void UpdatePosRot(const float rigidBodyRot, const glm::vec2& pos) { m_RigidBodyRot = rigidBodyRot; m_RigidBodyPos = pos; }
 
 	Shape(const Shape& other) = delete;
 	Shape(Shape&& other) = delete;
@@ -40,7 +41,9 @@ public:
 
 protected:
 
-	Shape() = default;
+	Shape(const float boundingRadius) :m_BoundingRadius(boundingRadius) {};
+
+	float m_BoundingRadius{};
 
 	float m_RigidBodyRot{};
 	glm::vec2 m_RigidBodyPos{};

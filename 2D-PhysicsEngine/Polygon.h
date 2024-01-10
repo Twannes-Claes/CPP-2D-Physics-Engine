@@ -9,7 +9,7 @@ class Polygon : public Shape
 {
 public:
 
-	explicit Polygon(std::vector<SDL_FPoint> vertices);
+	explicit Polygon(std::vector<SDL_FPoint> vertices, const float boundingRadius);
 	virtual ~Polygon() override = default;
 
 	virtual void UpdateVertices() override;
@@ -19,7 +19,7 @@ public:
 
 	virtual Type GetType()  const override { return Type::Polygon; }
 
-	//Calculating this, goes way over my math skills
+	//Calculating this, goes way over scope
 	//https://stackoverflow.com/questions/41592034/computing-tensor-of-inertia-in-2d/41618980#41618980
 	float GetMomentOfInteria(const float) const override { return 1000.f; }
 

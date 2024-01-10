@@ -10,6 +10,8 @@
 #include "glm/gtx/norm.hpp"
 #pragma warning(pop)
 
+#define BROADPHASE
+
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
 {
 	const Shape::Type aType = a->GetShape()->GetType();
@@ -17,7 +19,7 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 
 	if(aType == Shape::Type::Circle && bType == Shape::Type::Circle)
 	{
-		return CollisionSolver::CircleVSCircle(a, b, data);
+		return CollisionSolver::CircleVSCircle(a, b, data, false);
 	}
 
 	const bool isAPoly = aType == Shape::Type::Polygon || aType == Shape::Type::Box;
@@ -25,38 +27,62 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 
 	if (isAPoly && isBPoly)
 	{
-		return CollisionSolver::PolyVSPoly(a, b, data);
+#ifdef BROADPHASE
+		if(CollisionSolver::CircleVSCircle(a,b, data, true))
+		{
+#endif
+
+			return CollisionSolver::PolyVSPoly(a, b, data);
+#ifdef BROADPHASE
+		}
+#endif
 	}
 
 	if(aType == Shape::Type::Circle && isBPoly)
 	{
-		return CollisionSolver::CircleVsPoly(b, a, data);
+#ifdef BROADPHASE
+		if (CollisionSolver::CircleVSCircle(a, b, data, true))
+		{
+#endif
+			return CollisionSolver::CircleVsPoly(b, a, data);
+#ifdef BROADPHASE
+		}
+#endif
 	}
 
 	if (isAPoly && bType == Shape::Type::Circle)
 	{
-		return CollisionSolver::CircleVsPoly(a, b, data);
+#ifdef BROADPHASE
+		if (CollisionSolver::CircleVSCircle(a, b, data, true))
+		{
+#endif
+			return CollisionSolver::CircleVsPoly(a, b, data);
+#ifdef BROADPHASE
+		}
+#endif
 	}
 
 	return false;
 }
 
-bool CollisionSolver::CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& data)
+bool CollisionSolver::CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& data, bool detectOnly)
 {
-	const Circle* aCircleShape = dynamic_cast<Circle*>(a->GetShape());
-	const Circle* bCircleShape = dynamic_cast<Circle*>(b->GetShape());
+	const Shape* aCircleShape = a->GetShape();
+	const Shape* bCircleShape = b->GetShape();
 
 	//Get the squared distance between the circles
 	const float distance = glm::distance2(a->Pos, b->Pos);
 
 	//Sum the radius
-	const float circleRadiusSum = aCircleShape->GetRadius() + bCircleShape->GetRadius();
+	const float circleRadiusSum = aCircleShape->GetBoundingRadius() + bCircleShape->GetBoundingRadius();
 
 	//If distance squared is smaller than the radius squared circles are colliding
 	const bool hasCollision = distance <= (circleRadiusSum * circleRadiusSum);
 
 	//If no collision return early
 	if(!hasCollision) return false;
+
+	if (detectOnly) return true;
 
 	//Visualization of data
 	//https://turanszkij.files.wordpress.com/2020/04/sphere-sphere-2.png
@@ -71,8 +97,8 @@ bool CollisionSolver::CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& 
 	data.normal = glm::normalize(glm::vec2{ b->Pos - a->Pos });
 	
 	//Get start and end location of collision between a && b
-	data.start = b->Pos - (data.normal * bCircleShape->GetRadius());
-	data.end = a->Pos + (data.normal * aCircleShape->GetRadius());
+	data.start = b->Pos - (data.normal * bCircleShape->GetBoundingRadius());
+	data.end = a->Pos + (data.normal * aCircleShape->GetBoundingRadius());
 	
 	//Get distance between start and end
 	data.depth = glm::distance(data.end, data.start);
@@ -196,7 +222,7 @@ bool CollisionSolver::CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, C
 	glm::vec2 minCurrV{};
 	glm::vec2 minNextV{};
 
-	float distanceToEdge = std::numeric_limits<float>::lowest();
+	float distanceToEdge = -FLT_MAX;
 
 	for (int i = 0; i < static_cast<int>(verticesPoly.size()); ++i)
 	{
@@ -241,7 +267,7 @@ bool CollisionSolver::CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, C
 		}
 	}
 
-	const float radius = circle->GetRadius();
+	const float radius = circle->GetBoundingRadius();
 
 	if(isCircleOutsidePoly)
 	{
@@ -317,6 +343,11 @@ bool CollisionSolver::CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, C
 				const glm::vec2 edgeNormalized = glm::normalize(glm::vec2{ minNextV - minCurrV });
 				data.normal = glm::vec2{ -edgeNormalized.y, edgeNormalized.x };
 
+				if (poly->GetType() == Shape::Type::Polygon)
+				{
+					data.normal *= -1.f;
+				}
+
 				data.start = circleBody->Pos - data.normal * radius;
 				data.end = data.start + data.normal * data.depth;
 			}
@@ -335,7 +366,21 @@ bool CollisionSolver::CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, C
 		data.normal = glm::vec2{ -edgeNormalized.y, edgeNormalized.x };
 
 		data.start = circleBody->Pos - data.normal * radius;
+
 		data.end = data.start + data.normal * data.depth;
+
+		if(poly->GetType() == Shape::Type::Polygon)
+		{
+			glm::vec2 fix = circleBody->Pos - data.end;
+
+			//if(data.depth >= radius)
+			//{
+			//	std::cout << "found it";
+			//	//fix = -(circleBody->Pos - data.end);
+			//}
+
+			data.end += fix * 2.f;
+		}
 	}
 
 	ProjectionMethod(data);

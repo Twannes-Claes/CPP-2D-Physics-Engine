@@ -44,7 +44,7 @@ public:
 
 private:
 
-	static bool CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& data);
+	static bool CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& data, bool detectOnly);
 
 	static bool PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data);
 

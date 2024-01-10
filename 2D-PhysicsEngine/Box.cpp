@@ -1,9 +1,11 @@
 #include "Box.h"
 
+#include "glm/ext/quaternion_geometric.hpp"
+
 Box::Box(const float w, const float h) :Box(glm::vec2{w,h}) {}
 
 Box::Box(const glm::vec2& dimensions):
-Polygon(GetBoxVertices(dimensions)),
+Polygon(GetBoxVertices(dimensions), glm::length(dimensions)),
 m_Dimensions(dimensions)
 {
 	

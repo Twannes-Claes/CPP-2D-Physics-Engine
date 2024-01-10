@@ -7,20 +7,20 @@
 
 
 Circle::Circle(const float radius):
-m_Radius(radius)
+Shape(radius)
 {
 	m_AngleBetweenVertices = 360.f / static_cast<float>(m_AmountVertices);
 }
 
 std::unique_ptr<Shape> Circle::Clone() const
 {
-	return std::make_unique<Circle>(m_Radius);
+	return std::make_unique<Circle>(m_BoundingRadius);
 }
 
 void Circle::DrawShape(SDL_Renderer* pRenderer)
 {
-    const float xRotLine = m_RigidBodyPos.x + m_Radius * glm::cos(0.f + m_RigidBodyRot);
-    const float yRotLine = m_RigidBodyPos.y + m_Radius * glm::sin(0.f + m_RigidBodyRot);
+    const float xRotLine = m_RigidBodyPos.x + m_BoundingRadius * glm::cos(0.f + m_RigidBodyRot);
+    const float yRotLine = m_RigidBodyPos.y + m_BoundingRadius * glm::sin(0.f + m_RigidBodyRot);
 
     SDL_RenderDrawLineF(pRenderer, m_RigidBodyPos.x, m_RigidBodyPos.y, xRotLine, yRotLine);
 
@@ -28,13 +28,13 @@ void Circle::DrawShape(SDL_Renderer* pRenderer)
     {
         angles.x = glm::radians(static_cast<float>(i) * m_AngleBetweenVertices);
 
-        xy1.x = m_RigidBodyPos.x + m_Radius * glm::cos(angles.x);
-        xy1.y = m_RigidBodyPos.y + m_Radius * glm::sin(angles.x);
+        xy1.x = m_RigidBodyPos.x + m_BoundingRadius * glm::cos(angles.x);
+        xy1.y = m_RigidBodyPos.y + m_BoundingRadius * glm::sin(angles.x);
 
         angles.y = glm::radians(static_cast<float>(i + 1) * m_AngleBetweenVertices);
 
-        xy2.x = m_RigidBodyPos.x + m_Radius * glm::cos(angles.y);
-        xy2.y = m_RigidBodyPos.y + m_Radius * glm::sin(angles.y);
+        xy2.x = m_RigidBodyPos.x + m_BoundingRadius * glm::cos(angles.y);
+        xy2.y = m_RigidBodyPos.y + m_BoundingRadius * glm::sin(angles.y);
 
         SDL_RenderDrawLineF(pRenderer, xy1.x, xy1.y, xy2.x, xy2.y);
     }
@@ -43,5 +43,5 @@ void Circle::DrawShape(SDL_Renderer* pRenderer)
 float Circle::GetMomentOfInteria(const float mass) const
 {
     //I = 0.5f(1/2) * r^2 * mass
-    return 0.5f * (m_Radius * m_Radius) * mass;
+    return 0.5f * (m_BoundingRadius * m_BoundingRadius) * mass;
 }

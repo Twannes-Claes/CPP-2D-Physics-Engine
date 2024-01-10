@@ -144,7 +144,8 @@ void PhysicsEngine::Run()
                            //points.push_back(SDL_FPoint{ 40.f, 20.f });
                            //
                            //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), m_MouseX, m_MouseY, 5.f));
-                           m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6,8), Random(20.f,50.f))), m_MouseX, m_MouseY, 5.f));
+                           const float radius = Random(20.f, 50.f);
+                           m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6,8), radius),radius), m_MouseX, m_MouseY, 5.f));
                        }
                        break;
 						default:
@@ -196,6 +197,14 @@ void PhysicsEngine::Run()
             //Reset timer
             m_FrameCount = 0;
             m_fpsTimer = 0;
+        }
+
+        if (m_RigidBodys[m_IndexCurr]->IsStatic() == false)
+        {
+            //int x, y;
+            SDL_GetMouseState(&m_MouseX, &m_MouseY);
+            m_RigidBodys[m_IndexCurr]->Pos.x = static_cast<float>(m_MouseX);
+            m_RigidBodys[m_IndexCurr]->Pos.y = static_cast<float>(m_MouseY);
         }
     }
 

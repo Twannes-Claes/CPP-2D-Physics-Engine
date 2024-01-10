@@ -18,16 +18,12 @@ public:
 
 	float GetMomentOfInteria(const float mass) const override;
 
-	float GetRadius() const { return m_Radius; }
-
 	Circle(const Circle& other) = delete;
 	Circle(Circle&& other) = delete;
 	Circle& operator=(const Circle& other) = delete;
 	Circle& operator=(Circle&& other) = delete;
 
 private:
-
-	float m_Radius{};
 
 	int m_AmountVertices{32};
 	float m_AngleBetweenVertices{};
