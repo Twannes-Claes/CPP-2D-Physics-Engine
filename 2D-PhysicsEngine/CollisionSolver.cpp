@@ -10,7 +10,7 @@
 #include "glm/gtx/norm.hpp"
 #pragma warning(pop)
 
-//#define BROADPHASE
+#define BROADPHASE
 
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
 {
@@ -405,8 +405,8 @@ void CollisionSolver::ProjectionMethod(const CollisionData& data)
 	const float da = data.depth / totalInvMass * data.a->InvMass;
 	const float db = data.depth / totalInvMass * data.b->InvMass;
 	
-	data.a->Pos -= data.normal * da * 0.7f;
-	data.b->Pos += data.normal * db * 0.7f;
+	data.a->Pos -= data.normal * da * 1.f;
+	data.b->Pos += data.normal * db * 1.f;
 
 	data.a->GetShape()->UpdatePosRot(data.a->Rot, data.a->Pos);
 	data.a->GetShape()->UpdateVertices();
@@ -455,9 +455,4 @@ void CollisionSolver::ImpulseMethod(const CollisionData& data)
 	//Add the impulses
 	data.a->AddImpulse(impulse, dirA);
 	data.b->AddImpulse(-impulse, dirB);
-}
-
-float CollisionSolver::Cross(const glm::vec2& a, const glm::vec2& b)
-{
-	return (a.x * b.y) - (a.y * b.x);
 }

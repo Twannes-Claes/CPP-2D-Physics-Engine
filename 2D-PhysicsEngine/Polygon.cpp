@@ -1,5 +1,6 @@
 #include "Polygon.h"
 
+#include "CollisionSolver.h"
 #include "glm/ext/matrix_transform.hpp"
 
 //#define BROADPHASE
@@ -14,6 +15,28 @@ m_Vertices(std::move(vertices))
 std::unique_ptr<Shape> Polygon::Clone() const
 {
 	return std::make_unique<Polygon>(m_Vertices, m_BoundingRadius);
+}
+
+float Polygon::GetMomentOfInteria(const float) const
+{
+	//https://stackoverflow.com/questions/41592034/computing-tensor-of-inertia-in-2d/41618980#41618980
+    float totalArea{};
+    float totalMass{};
+
+    for(int i{}; i < static_cast<int>(m_Vertices.size()); ++i)
+    {
+        const uint32_t nextI = (i + 1) % m_Vertices.size();
+
+        const glm::vec2& a = glm::vec2{ m_Vertices[i].x, m_Vertices[i].y };
+        const glm::vec2& b = glm::vec2{ m_Vertices[nextI].x, m_Vertices[nextI].y };
+
+        const float crossDistancePerpendicular = abs(CollisionSolver::Cross(a, b));
+
+        totalArea += crossDistancePerpendicular * (glm::dot(a, a) + glm::dot(b, b) + glm::dot(a, b));
+        totalMass += crossDistancePerpendicular;
+    }
+
+    return totalArea / 6.f / totalMass;
 }
 
 glm::vec2 Polygon::GetEdge(const uint32_t index) const

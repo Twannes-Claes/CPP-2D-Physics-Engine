@@ -21,7 +21,7 @@ public:
 
 	//Calculating this, goes way over scope
 	//https://stackoverflow.com/questions/41592034/computing-tensor-of-inertia-in-2d/41618980#41618980
-	float GetMomentOfInteria(const float) const override { return 1000.f; }
+	float GetMomentOfInteria(const float) const override;
 
 	const std::vector<SDL_FPoint>& GetVertices() const { return m_TransformedPoints; }
 

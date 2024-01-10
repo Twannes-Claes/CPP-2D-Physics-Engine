@@ -40,7 +40,7 @@ public:
 	static bool IsColliding(RigidBody* a, RigidBody* b, CollisionData& data);
 
 
-	inline static float Cross(const glm::vec2& a, const glm::vec2& b);
+	inline static float Cross(const glm::vec2& a, const glm::vec2& b) { return (a.x * b.y) - (a.y * b.x); }
 
 private:
 

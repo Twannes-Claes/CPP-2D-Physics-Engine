@@ -56,11 +56,11 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(50.f, 50.f), 500.f, 300.f, 0.f, 0.5f, 0.5f, static_cast<float>(M_PI) * 0.45f));
     
 	//Bottom floor
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(400.f, 30.f), 400.f, 600.f, 0.f, 0.2f, 0.2f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(windowWidth/2.f, 30.f), windowWidth/2.f, windowHeight - 15.f, 0.f, 0.2f, 0.2f));
     
     //Sidewalls
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 300.f), 15.f, 265.f, 0.f, 0.2f, 0.2f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, 300.f), 784.f, 265.f, 0.f, 0.2f, 0.2f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, windowHeight/2.f), 15.f, windowHeight / 2.f - 45.f, 0.f, 0.2f, 0.2f));
+    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, windowHeight/2.f), windowWidth - 15.f, windowHeight / 2.f - 45.f, 0.f, 0.2f, 0.2f));
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -145,7 +145,7 @@ void PhysicsEngine::Run()
                            //
                            //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), m_MouseX, m_MouseY, 5.f));
                            const float radius = Random(20.f, 50.f);
-                           m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6,8), radius),radius), m_MouseX, m_MouseY, 5.f));
+                           m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6,8), radius),radius), m_MouseX, m_MouseY, 1.f));
                        }
                        break;
 						default:
@@ -219,7 +219,11 @@ void PhysicsEngine::Run()
 void PhysicsEngine::FixedUpdate()
 {
     //Set a max amount of times the FixedUpdate can be called in a single frame
-    if (m_DeltaLag > m_MaxDeltaLag) m_DeltaLag = m_MaxDeltaLag;
+    if (m_DeltaLag > m_MaxDeltaLag)
+    {
+        m_DeltaLag = m_MaxDeltaLag;
+        std::cout << "FOund lag\n";
+    }
 
     //Fixed update loop that checks for missed timesteps
     while (m_DeltaLag >= m_PhysicsTimeStep)
@@ -230,10 +234,6 @@ void PhysicsEngine::FixedUpdate()
         {
             //Gravity
             body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
-            //
-            //body->GenerateDrag(0.002f);
-
-            //body->AddTorque(200.f);
 
             //Update
             body->Update(m_PhysicsTimeStep);
