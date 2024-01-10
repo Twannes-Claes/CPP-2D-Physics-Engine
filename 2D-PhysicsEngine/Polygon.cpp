@@ -2,6 +2,8 @@
 
 #include "glm/ext/matrix_transform.hpp"
 
+//#define BROADPHASE
+
 Polygon::Polygon(std::vector<SDL_FPoint> vertices, const float boundingRadius):
 Shape(boundingRadius),
 m_Vertices(std::move(vertices))
@@ -47,6 +49,7 @@ void Polygon::DrawShape(SDL_Renderer* pRenderer)
 	SDL_RenderDrawLinesF(pRenderer, m_TransformedPoints.data(), static_cast<int>(m_TransformedPoints.size()));
 	SDL_RenderDrawLineF(pRenderer, m_TransformedPoints.back().x, m_TransformedPoints.back().y, m_TransformedPoints.front().x, m_TransformedPoints.front().y);
 
+#ifdef BROADPHASE
     //Draw debug bounding circle
     glm::vec2 xy1{};
     glm::vec2 xy2{};
@@ -68,4 +71,5 @@ void Polygon::DrawShape(SDL_Renderer* pRenderer)
 
         SDL_RenderDrawLineF(pRenderer, xy1.x, xy1.y, xy2.x, xy2.y);
     }
+#endif
 }

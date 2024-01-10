@@ -10,7 +10,7 @@
 #include "glm/gtx/norm.hpp"
 #pragma warning(pop)
 
-#define BROADPHASE
+//#define BROADPHASE
 
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
 {
