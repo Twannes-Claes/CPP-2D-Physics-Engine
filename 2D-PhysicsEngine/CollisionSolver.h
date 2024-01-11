@@ -48,11 +48,11 @@ private:
 
 	static bool PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data);
 
-	static bool CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, CollisionData& data);
+	static bool PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, CollisionData& data);
 
-	static void ProjectionMethod(const CollisionData& data);
+	static void PositionalCorrection(const CollisionData& data);
 
-	static void ImpulseMethod(const CollisionData& data);
+	static void AddImpulses(const CollisionData& data);
 
 	static void FindLeastSeperation(const Polygon* a, const Polygon* b, CollisionDataPoly& data);
 

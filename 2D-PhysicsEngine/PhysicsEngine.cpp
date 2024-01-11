@@ -222,7 +222,6 @@ void PhysicsEngine::FixedUpdate()
     if (m_DeltaLag > m_MaxDeltaLag)
     {
         m_DeltaLag = m_MaxDeltaLag;
-        std::cout << "FOund lag\n";
     }
 
     //Fixed update loop that checks for missed timesteps

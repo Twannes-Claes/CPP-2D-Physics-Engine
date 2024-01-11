@@ -10,7 +10,7 @@
 #include "glm/gtx/norm.hpp"
 #pragma warning(pop)
 
-//#define BROADPHASE
+#define BROADPHASE
 
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
 //	const Shape::Type aType = a->GetShape()->GetType();
@@ -82,13 +82,13 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 					#ifdef BROADPHASE
 					if (CollisionSolver::CircleVSCircle(a, b, data, true))
 					{
-						return CollisionSolver::CircleVsPoly(b, a, data);
+						return CollisionSolver::PolyVsCircle(b, a, data);
 					}
 
 					return false;
+					#else
+					return CollisionSolver::PolyVsCircle(b, a, data);
 					#endif
-
-					return CollisionSolver::CircleVsPoly(b, a, data);
 				}
 			}
 			break;
@@ -104,13 +104,13 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 					#ifdef BROADPHASE
 					if (CollisionSolver::CircleVSCircle(a, b, data, true))
 					{
-						return CollisionSolver::CircleVsPoly(a, b, data);
+						return CollisionSolver::PolyVsCircle(a, b, data);
 					}
 
 					return false;
+					#else
+					return CollisionSolver::PolyVsCircle(a, b, data);
 					#endif
-
-					return CollisionSolver::CircleVsPoly(a, b, data);
 				}
 				case Shape::Type::Polygon:
 				case Shape::Type::Box:
@@ -122,9 +122,9 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 					}
 
 					return false;
-					#endif
-
+					#else
 					return CollisionSolver::PolyVSPoly(a, b, data);
+					#endif
 				}
 			}
 		}
@@ -172,9 +172,9 @@ bool CollisionSolver::CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& 
 	//Get distance between start and end
 	data.depth = glm::distance(data.end, data.start);
 	
-	ProjectionMethod(data);
+	PositionalCorrection(data);
 
-	ImpulseMethod(data);
+	AddImpulses(data);
 
 	return true;
 }
@@ -223,9 +223,9 @@ bool CollisionSolver::PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data
 		data.end = bInfo.projectedPoint;
 	}
 	
-	ProjectionMethod(data);
+	PositionalCorrection(data);
 	
-	ImpulseMethod(data);
+	AddImpulses(data);
 
 	return true;
 }
@@ -279,7 +279,7 @@ void CollisionSolver::FindLeastSeperation(const Polygon* a, const Polygon* b, Co
 	data.seperationLength = seperation;
 }
 
-bool CollisionSolver::CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, CollisionData& data)
+bool CollisionSolver::PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, CollisionData& data)
 {
 	const Polygon* poly = dynamic_cast<Polygon*>(polyBody->GetShape());
 	const Circle* circle = dynamic_cast<Circle*>(circleBody->GetShape());
@@ -452,30 +452,31 @@ bool CollisionSolver::CircleVsPoly(RigidBody* polyBody, RigidBody* circleBody, C
 		}
 	}
 
-	ProjectionMethod(data);
-	//
-	ImpulseMethod(data);
+	PositionalCorrection(data);
+	
+	AddImpulses(data);
 
 	return true;
 }
 
 
 
-void CollisionSolver::ProjectionMethod(const CollisionData& data)
+void CollisionSolver::PositionalCorrection(const CollisionData& data)
 {
 	if (data.a->IsStatic() && data.b->IsStatic()) return;
 
-	//TODO ADD PERCENT CORRECTION
 	//https://code.tutsplus.com/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331t
 	//Projection method makes sure the shapes are set back to the correct position so they dont touch anymore.
+
+	constexpr float percent = 0.7f;
 
 	const float totalInvMass = data.a->InvMass + data.b->InvMass;
 
 	const float da = data.depth / totalInvMass * data.a->InvMass;
 	const float db = data.depth / totalInvMass * data.b->InvMass;
 	
-	data.a->Pos -= data.normal * da * 1.f;
-	data.b->Pos += data.normal * db * 1.f;
+	data.a->Pos -= data.normal * da * percent;
+	data.b->Pos += data.normal * db * percent;
 
 	data.a->GetShape()->UpdatePosRot(data.a->Rot, data.a->Pos);
 	data.a->GetShape()->UpdateVertices();
@@ -483,7 +484,7 @@ void CollisionSolver::ProjectionMethod(const CollisionData& data)
 	data.b->GetShape()->UpdateVertices();
 }
 
-void CollisionSolver::ImpulseMethod(const CollisionData& data)
+void CollisionSolver::AddImpulses(const CollisionData& data)
 {
 	//https://code.tutsplus.com/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331t
 	//Impulse method then response to that collision and moves the object corresponding
