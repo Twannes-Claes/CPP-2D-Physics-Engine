@@ -282,15 +282,15 @@ void PhysicsEngine::Draw() const
         body->Draw(m_pRenderer);
     }
 
-    SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
-
-    const SDL_FRect startPoint = SDL_FRect{ m_DataCollision.start.x - 2.f, m_DataCollision.start.y - 2.f, 4.f, 4.f };
-    const SDL_FRect endPoint = SDL_FRect{ m_DataCollision.end.x - 2.f, m_DataCollision.end.y - 2.f, 4.f, 4.f };
-
-    SDL_RenderDrawRectF(m_pRenderer, &startPoint);
-    SDL_RenderDrawRectF(m_pRenderer, &endPoint);
-
-    SDL_RenderDrawLineF(m_pRenderer, m_DataCollision.start.x, m_DataCollision.start.y, m_DataCollision.start.x + m_DataCollision.normal.x * 15.f, m_DataCollision.start.y + m_DataCollision.normal.y * 15.f);
+    //SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
+    //
+    //const SDL_FRect startPoint = SDL_FRect{ m_DataCollision.start.x - 2.f, m_DataCollision.start.y - 2.f, 4.f, 4.f };
+    //const SDL_FRect endPoint = SDL_FRect{ m_DataCollision.end.x - 2.f, m_DataCollision.end.y - 2.f, 4.f, 4.f };
+    //
+    //SDL_RenderDrawRectF(m_pRenderer, &startPoint);
+    //SDL_RenderDrawRectF(m_pRenderer, &endPoint);
+    //
+    //SDL_RenderDrawLineF(m_pRenderer, m_DataCollision.start.x, m_DataCollision.start.y, m_DataCollision.start.x + m_DataCollision.normal.x * 15.f, m_DataCollision.start.y + m_DataCollision.normal.y * 15.f);
 
     m_FontFPS->Draw();
     m_FontFPSFixed->Draw();

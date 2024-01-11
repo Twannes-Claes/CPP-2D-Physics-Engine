@@ -10,62 +10,131 @@
 #include "glm/gtx/norm.hpp"
 #pragma warning(pop)
 
-#define BROADPHASE
+//#define BROADPHASE
 
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
+//	const Shape::Type aType = a->GetShape()->GetType();
+//	const Shape::Type bType = b->GetShape()->GetType();
+//
+//	if(aType == Shape::Type::Circle && bType == Shape::Type::Circle)
+//	{
+//		return CollisionSolver::CircleVSCircle(a, b, data, false);
+//	}
+//
+//	const bool isAPoly = aType == Shape::Type::Polygon || aType == Shape::Type::Box;
+//	const bool isBPoly = bType == Shape::Type::Polygon || bType == Shape::Type::Box;
+//
+//	if (isAPoly && isBPoly)
+//	{
+//#ifdef BROADPHASE
+//		if(CollisionSolver::CircleVSCircle(a,b, data, true))
+//		{
+//#endif
+//
+//			return CollisionSolver::PolyVSPoly(a, b, data);
+//#ifdef BROADPHASE
+//		}
+//#endif
+//	}
+//
+//	if(aType == Shape::Type::Circle && isBPoly)
+//	{
+//#ifdef BROADPHASE
+//		if (CollisionSolver::CircleVSCircle(a, b, data, true))
+//		{
+//#endif
+//			return CollisionSolver::CircleVsPoly(b, a, data);
+//#ifdef BROADPHASE
+//		}
+//#endif
+//	}
+//
+//	if (isAPoly && bType == Shape::Type::Circle)
+//	{
+//#ifdef BROADPHASE
+//		if (CollisionSolver::CircleVSCircle(a, b, data, true))
+//		{
+//#endif
+//			return CollisionSolver::CircleVsPoly(a, b, data);
+//#ifdef BROADPHASE
+//		}
+//#endif
+//	}
+//
+//	return false;
 {
 	const Shape::Type aType = a->GetShape()->GetType();
 	const Shape::Type bType = b->GetShape()->GetType();
 
-	if(aType == Shape::Type::Circle && bType == Shape::Type::Circle)
+	switch (aType)
 	{
-		return CollisionSolver::CircleVSCircle(a, b, data, false);
-	}
-
-	const bool isAPoly = aType == Shape::Type::Polygon || aType == Shape::Type::Box;
-	const bool isBPoly = bType == Shape::Type::Polygon || bType == Shape::Type::Box;
-
-	if (isAPoly && isBPoly)
-	{
-#ifdef BROADPHASE
-		if(CollisionSolver::CircleVSCircle(a,b, data, true))
+		case Shape::Type::Circle:
 		{
-#endif
+			switch (bType)
+			{
+				case Shape::Type::Circle:
+				{
+					return CollisionSolver::CircleVSCircle(a, b, data, false);
+				}
+				case Shape::Type::Polygon:
+				case Shape::Type::Box:
+				{
+					#ifdef BROADPHASE
+					if (CollisionSolver::CircleVSCircle(a, b, data, true))
+					{
+						return CollisionSolver::CircleVsPoly(b, a, data);
+					}
 
-			return CollisionSolver::PolyVSPoly(a, b, data);
-#ifdef BROADPHASE
+					return false;
+					#endif
+
+					return CollisionSolver::CircleVsPoly(b, a, data);
+				}
+			}
+			break;
 		}
-#endif
-	}
 
-	if(aType == Shape::Type::Circle && isBPoly)
-	{
-#ifdef BROADPHASE
-		if (CollisionSolver::CircleVSCircle(a, b, data, true))
+		case Shape::Type::Polygon:
+		case Shape::Type::Box:
 		{
-#endif
-			return CollisionSolver::CircleVsPoly(b, a, data);
-#ifdef BROADPHASE
-		}
-#endif
-	}
+			switch (bType)
+			{
+				case Shape::Type::Circle:
+				{
+					#ifdef BROADPHASE
+					if (CollisionSolver::CircleVSCircle(a, b, data, true))
+					{
+						return CollisionSolver::CircleVsPoly(a, b, data);
+					}
 
-	if (isAPoly && bType == Shape::Type::Circle)
-	{
-#ifdef BROADPHASE
-		if (CollisionSolver::CircleVSCircle(a, b, data, true))
-		{
-#endif
-			return CollisionSolver::CircleVsPoly(a, b, data);
-#ifdef BROADPHASE
+					return false;
+					#endif
+
+					return CollisionSolver::CircleVsPoly(a, b, data);
+				}
+				case Shape::Type::Polygon:
+				case Shape::Type::Box:
+				{
+					#ifdef BROADPHASE
+					if (CollisionSolver::CircleVSCircle(a, b, data, true))
+					{
+						return CollisionSolver::PolyVSPoly(a, b, data);
+					}
+
+					return false;
+					#endif
+
+					return CollisionSolver::PolyVSPoly(a, b, data);
+				}
+			}
 		}
-#endif
+		break;
 	}
 
 	return false;
 }
 
-bool CollisionSolver::CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& data, bool detectOnly)
+bool CollisionSolver::CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& data, const bool detectOnly)
 {
 	const Shape* aCircleShape = a->GetShape();
 	const Shape* bCircleShape = b->GetShape();
