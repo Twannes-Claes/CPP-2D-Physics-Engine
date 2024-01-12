@@ -56,6 +56,11 @@ private:
 
 	float m_fpsTimer = 0;
 	float m_DurationFixed = 0;
+	float m_FixedLoopAmount = 0;
+
+	std::vector<float> m_DurationsFixedData{};
+	std::vector<uint32_t> m_AmountBodiesData{};
+	uint32_t m_TotalDurationsData{};
 
 	//MOusePos
 	int m_MouseX{}, m_MouseY{};

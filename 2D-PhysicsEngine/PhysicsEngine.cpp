@@ -61,6 +61,10 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     //Sidewalls
     m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, windowHeight/2.f), 15.f, windowHeight / 2.f - 45.f, 0.f, 0.2f, 0.2f));
     m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, windowHeight/2.f), windowWidth - 15.f, windowHeight / 2.f - 45.f, 0.f, 0.2f, 0.2f));
+
+    //Resize list of fps to 3 minutes worth of saving
+    m_DurationsFixedData.resize(180);
+    m_AmountBodiesData.resize(180);
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -137,11 +141,11 @@ void PhysicsEngine::Run()
                        {
                            //std::vector<SDL_FPoint> points{};
                            //
-                           //points.push_back(SDL_FPoint{ 20.f, 60.f });
-                           //points.push_back(SDL_FPoint{ -40.f, 20.f });
+                           //points.push_back(SDL_FPoint{ 70.f, 60.f });
+                           //points.push_back(SDL_FPoint{ -30.f, 40.f });
                            //points.push_back(SDL_FPoint{ -20.f, -60.f });
-                           //points.push_back(SDL_FPoint{ 20.f, -60.f });
-                           //points.push_back(SDL_FPoint{ 40.f, 20.f });
+                           //points.push_back(SDL_FPoint{ 40.f, -30.f });
+                           //points.push_back(SDL_FPoint{ 30.f, 10.f });
                            //
                            //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), m_MouseX, m_MouseY, 5.f));
                            const float radius = Random(20.f, 50.f);
@@ -191,12 +195,20 @@ void PhysicsEngine::Run()
         if (m_fpsTimer >= 1.f)
         {
             m_FontFPS->SetText(std::to_string(static_cast<int>(m_FrameCount/ m_fpsTimer)).c_str());
-            m_FontFPSFixed->SetText(std::to_string(m_DurationFixed).c_str());
+            m_FontFPSFixed->SetText(std::to_string(m_DurationFixed/m_FixedLoopAmount).c_str());
             m_FontAmountBodies->SetText(std::to_string(m_RigidBodys.size()).c_str());
 
             //Reset timer
             m_FrameCount = 0;
             m_fpsTimer = 0;
+
+            //Saving FPS data
+            m_DurationsFixedData[m_TotalDurationsData] = m_DurationFixed/m_FixedLoopAmount;
+            m_AmountBodiesData[m_TotalDurationsData] = m_RigidBodys.size();
+            ++m_TotalDurationsData;
+
+            m_DurationFixed = 0;
+            m_FixedLoopAmount = 0;
         }
 
         if (m_RigidBodys[m_IndexCurr]->IsStatic() == false)
@@ -214,11 +226,17 @@ void PhysicsEngine::Run()
 
     //Quit SDL
     SDL_Quit();
+
+
+    for(uint32_t i{}; i < m_TotalDurationsData; ++i)
+    {
+        std::cout << m_DurationsFixedData[i] << " || " << m_AmountBodiesData[i] << '\n';
+    }
 }
 
 void PhysicsEngine::FixedUpdate()
 {
-    //Set a max amount of times the FixedUpdate can be called in a single frame
+    //Set a max lag amount so simulation doesnt get stuck
     if (m_DeltaLag > m_MaxDeltaLag)
     {
         m_DeltaLag = m_MaxDeltaLag;
@@ -264,7 +282,8 @@ void PhysicsEngine::FixedUpdate()
 
         const auto endFixed = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count();
 
-        m_DurationFixed = static_cast<float>(endFixed - startFixed) * 0.001f;
+        m_DurationFixed += static_cast<float>(endFixed - startFixed) * 0.001f;
+        ++m_FixedLoopAmount;
     }
 }
 

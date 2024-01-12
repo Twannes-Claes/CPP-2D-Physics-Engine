@@ -12,6 +12,8 @@
 
 #define BROADPHASE
 
+#define ShapeType Shape::Type
+
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
 //	const Shape::Type aType = a->GetShape()->GetType();
 //	const Shape::Type bType = b->GetShape()->GetType();
@@ -63,21 +65,20 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 //
 //	return false;
 {
-	const Shape::Type aType = a->GetShape()->GetType();
-	const Shape::Type bType = b->GetShape()->GetType();
+	const ShapeType cacheBType = b->GetShape()->GetType();
 
-	switch (aType)
+	switch (a->GetShape()->GetType())
 	{
-		case Shape::Type::Circle:
+		case ShapeType::Circle:
 		{
-			switch (bType)
+			switch (cacheBType)
 			{
-				case Shape::Type::Circle:
+				case ShapeType::Circle:
 				{
 					return CollisionSolver::CircleVSCircle(a, b, data, false);
 				}
-				case Shape::Type::Polygon:
-				case Shape::Type::Box:
+				case ShapeType::Polygon:
+				case ShapeType::Box:
 				{
 					#ifdef BROADPHASE
 					if (CollisionSolver::CircleVSCircle(a, b, data, true))
@@ -94,12 +95,12 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 			break;
 		}
 
-		case Shape::Type::Polygon:
-		case Shape::Type::Box:
+		case ShapeType::Polygon:
+		case ShapeType::Box:
 		{
-			switch (bType)
+			switch (cacheBType)
 			{
-				case Shape::Type::Circle:
+				case ShapeType::Circle:
 				{
 					#ifdef BROADPHASE
 					if (CollisionSolver::CircleVSCircle(a, b, data, true))
@@ -112,8 +113,8 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 					return CollisionSolver::PolyVsCircle(a, b, data);
 					#endif
 				}
-				case Shape::Type::Polygon:
-				case Shape::Type::Box:
+				case ShapeType::Polygon:
+				case ShapeType::Box:
 				{
 					#ifdef BROADPHASE
 					if (CollisionSolver::CircleVSCircle(a, b, data, true))
@@ -469,15 +470,18 @@ void CollisionSolver::PositionalCorrection(const CollisionData& data)
 	//Projection method makes sure the shapes are set back to the correct position so they dont touch anymore.
 
 	constexpr float percent = 0.7f;
+	constexpr float minPenetration = 0.01f;
 
 	const float totalInvMass = data.a->InvMass + data.b->InvMass;
 
-	const float da = data.depth / totalInvMass * data.a->InvMass;
-	const float db = data.depth / totalInvMass * data.b->InvMass;
-	
-	data.a->Pos -= data.normal * da * percent;
-	data.b->Pos += data.normal * db * percent;
+	//Get the length of how much the objects need to move
+	//the std::max is to let objects penetrate for a small amount, this lowers jittering objects
+	const glm::vec2 correctionLength = std::max( data.depth - minPenetration, 0.f) / totalInvMass * data.normal * percent;
 
+	data.a->Pos -= data.a->InvMass * correctionLength;
+	data.b->Pos += data.b->InvMass * correctionLength;
+
+	//Because the position has been updated, we need to update vertices of the bodies to have a more smooth collision
 	data.a->GetShape()->UpdatePosRot(data.a->Rot, data.a->Pos);
 	data.a->GetShape()->UpdateVertices();
 	data.b->GetShape()->UpdatePosRot(data.b->Rot, data.b->Pos);
@@ -497,32 +501,33 @@ void CollisionSolver::AddImpulses(const CollisionData& data)
 	const float e = std::min(data.a->Elasticity, data.b->Elasticity);
 	const float f = std::min(data.a->Friction, data.b->Friction);
 
-	//Now calculate relative velocity with angular velocity
-	const glm::vec2 dirA = data.end - data.a->Pos;
-	const glm::vec2 dirB = data.start - data.b->Pos;
+	//Get the contact directions between body a and b
+	const glm::vec2 contactDirA = data.end - data.a->Pos;
+	const glm::vec2 contactDirB = data.start - data.b->Pos;
 
-	const glm::vec2 vA = data.a->Velocity + glm::vec2{ -data.a->AngularVelocity * dirA.y, data.a->AngularVelocity * dirA.x };
-	const glm::vec2 vB = data.b->Velocity + glm::vec2{ -data.b->AngularVelocity * dirB.y, data.b->AngularVelocity * dirB.x };
+	//Now calculate relative velocity with angular velocity
+	const glm::vec2 relVelA = data.a->Velocity + glm::vec2{ -data.a->AngularVelocity * contactDirA.y, data.a->AngularVelocity * contactDirA.x };
+	const glm::vec2 relVelB = data.b->Velocity + glm::vec2{ -data.b->AngularVelocity * contactDirB.y, data.b->AngularVelocity * contactDirB.x };
 
 	//const float relVelDotNormal = glm::dot(va - vb, data.normal);
-	const glm::vec2 relVel = vA - vB;
+	const glm::vec2 relVel = relVelA - relVelB;
 
 	const float relVelDotNormal = glm::dot(relVel, data.normal);
 
 	//Formula https://gamedev.stackexchange.com/questions/157537/impulse-resolution-for-purely-rotational-collisions-relative-linear-velocity
 	//Calculate the amount of impulse(scalar)
-	const float impulseLinearForce = -(1 + e) * relVelDotNormal / ((data.a->InvMass + data.b->InvMass) + ((Cross(dirA, data.normal) * Cross(dirA, data.normal)) * data.a->InvI) + ((Cross(dirB, data.normal) * Cross(dirB, data.normal)) * data.b->InvI));
+	const float impulseLinearForce = -(1 + e) * relVelDotNormal / ((data.a->InvMass + data.b->InvMass) + ((Cross(contactDirA, data.normal) * Cross(contactDirA, data.normal)) * data.a->InvI) + ((Cross(contactDirB, data.normal) * Cross(contactDirB, data.normal)) * data.b->InvI));
 
 	//Now rotational impulse along tangent
 	const glm::vec2 tangent = glm::vec2{ -data.normal.y, data.normal.x };
 	const float relVelDotTangent = glm::dot(relVel, tangent);
 
-	const float impulseTangentForce = f * -(1 + e) * relVelDotTangent / ((data.a->InvMass + data.b->InvMass) + ((Cross(dirA, tangent) * Cross(dirA, tangent)) * data.a->InvI) + ((Cross(dirB, tangent) * Cross(dirB, tangent)) * data.b->InvI));
+	const float impulseTangentForce = f * -(1 + e) * relVelDotTangent / ((data.a->InvMass + data.b->InvMass) + ((Cross(contactDirA, tangent) * Cross(contactDirA, tangent)) * data.a->InvI) + ((Cross(contactDirB, tangent) * Cross(contactDirB, tangent)) * data.b->InvI));
 
 	//Calculate full impulse with linear and rotational
 	const glm::vec2 impulse = (data.normal * impulseLinearForce) + (tangent * impulseTangentForce);
 
 	//Add the impulses
-	data.a->AddImpulse(impulse, dirA);
-	data.b->AddImpulse(-impulse, dirB);
+	data.a->AddImpulse(impulse, contactDirA);
+	data.b->AddImpulse(-impulse, contactDirB);
 }
