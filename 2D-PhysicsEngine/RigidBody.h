@@ -79,5 +79,9 @@ private:
 
 
 	static const float m_PI2;
+
+	void EulerIntegration(const float deltaTime);
+	void VerletIntegration(const float deltaTime);
+	void RK4Integration(const float deltaTime);
 };
 

@@ -75,26 +75,15 @@ void RigidBody::Update(const float deltaTime)
 	//Static objects shouldnt update
 	if(IsStatic()) return;
 
-	//Euler integration of acceleration
-	m_Acceleration = m_AccumulatedForce * InvMass;
+	//EulerIntegration(deltaTime);
+	//VerletIntegration(deltaTime);
+	RK4Integration(deltaTime);
 
-	Velocity += m_Acceleration * deltaTime;
-
-	Pos += Velocity * deltaTime;
-
-	//Clear linear forces
-	m_AccumulatedForce = glm::vec2{};
-
-	//Euler integration of rotation acceleration
-	m_AngularAcceleration = m_AccumulatedTorque * InvI;
-
-	AngularVelocity += m_AngularAcceleration * deltaTime;
-
-	Rot += AngularVelocity * deltaTime;
-
+	//Rotation should always be in bounds of 360 degrees
 	Rot = std::fmodf(Rot, m_PI2);
 
-	//Clear torque force
+	//Clear linear and angular forces
+	m_AccumulatedForce = glm::vec2{};
 	m_AccumulatedTorque = 0;
 
 	//Update rot of the shape to then recalculate world space
@@ -117,4 +106,74 @@ void RigidBody::Draw(SDL_Renderer* pRenderer) const
 	SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
 
 	if (m_ColliderShape) m_ColliderShape->DrawShape(pRenderer);
+}
+
+void RigidBody::EulerIntegration(const float deltaTime)
+{
+	//Calculate the linear and angular acceleration
+	m_Acceleration = m_AccumulatedForce * InvMass;
+	m_AngularAcceleration = m_AccumulatedTorque * InvI;
+
+	//Euler integration
+	Velocity += m_Acceleration * deltaTime;
+
+	Pos += Velocity * deltaTime;
+
+	AngularVelocity += m_AngularAcceleration * deltaTime;
+
+	Rot += AngularVelocity * deltaTime;
+}
+
+void RigidBody::VerletIntegration(const float deltaTime)
+{
+	//https://en.wikipedia.org/wiki/Verlet_integration
+	//Verlet integration
+	const glm::vec2 oldAcc = m_Acceleration;
+	m_Acceleration = m_AccumulatedForce * InvMass;
+
+	Pos = Pos + Velocity * deltaTime + m_Acceleration * (deltaTime * deltaTime / 2);
+	Velocity += (m_Acceleration + oldAcc) * (deltaTime / 2);
+
+	const float oldAccAngular = m_AngularAcceleration;
+	m_AngularAcceleration = m_AccumulatedTorque * InvI;
+
+	Rot = Rot + AngularVelocity * deltaTime + m_AngularAcceleration * (deltaTime * deltaTime / 2);
+	AngularVelocity += (m_AngularAcceleration + oldAccAngular) * (deltaTime / 2);
+}
+
+void RigidBody::RK4Integration(const float deltaTime)
+{
+	m_Acceleration = m_AccumulatedForce * InvMass;
+	m_AngularAcceleration = m_AccumulatedTorque * InvI;
+
+	const glm::vec2 k1xy = Velocity * deltaTime;
+	const glm::vec2 k1v = m_Acceleration * deltaTime;
+
+	const glm::vec2 k2xy = (Velocity + 0.5f * k1v) * deltaTime;
+	const glm::vec2 k2v = (m_Acceleration + 0.5f * k1v) * deltaTime;
+
+	const glm::vec2 k3xy = (Velocity + 0.5f * k2v) * deltaTime;
+	const glm::vec2 k3v = (m_Acceleration + 0.5f * k2v) * deltaTime;;
+
+	const glm::vec2 k4xy = (Velocity + k3v) * deltaTime;
+	const glm::vec2 k4v = (m_Acceleration + k3v) * deltaTime;
+
+	Pos += (k1xy + 2.f * k2xy + 2.f * k3xy + k4xy) / 6.f;
+	Velocity += (k1v + 2.f * k2v + 2.f * k3v + k4v) / 6.f;
+
+	const float k1xyRot = AngularVelocity * deltaTime;
+	const float k1vRot = m_AngularAcceleration * deltaTime;
+		 
+	const float k2xyRot = (AngularVelocity + 0.5f * k1vRot) * deltaTime;
+	const float k2vRot = (m_AngularAcceleration + 0.5f * k1vRot) * deltaTime;
+		 
+	const float k3xyRot = (AngularVelocity + 0.5f * k2vRot) * deltaTime;
+	const float k3vRot = (m_AngularAcceleration + 0.5f * k2vRot) * deltaTime;
+		 
+	const float k4xyRot = (AngularVelocity + k3vRot) * deltaTime;
+	const float k4vRot = (m_AngularAcceleration + k3vRot) * deltaTime;
+
+	Rot += (k1xyRot + 2.f * k2xyRot + 2.f * k3xyRot + k4xyRot) / 6.f;
+	AngularVelocity += (k1vRot + 2.f * k2vRot + 2.f * k3vRot + k4vRot) / 6.f;
+
 }

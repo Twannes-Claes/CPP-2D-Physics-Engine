@@ -3,7 +3,7 @@
 #include "CollisionSolver.h"
 #include "glm/ext/matrix_transform.hpp"
 
-//#define BROADPHASE
+//#define BROADPHASE_DEBUG
 
 Polygon::Polygon(std::vector<SDL_FPoint> vertices, const float boundingRadius):
 Shape(boundingRadius),
@@ -72,7 +72,7 @@ void Polygon::DrawShape(SDL_Renderer* pRenderer)
 	SDL_RenderDrawLinesF(pRenderer, m_TransformedPoints.data(), static_cast<int>(m_TransformedPoints.size()));
 	SDL_RenderDrawLineF(pRenderer, m_TransformedPoints.back().x, m_TransformedPoints.back().y, m_TransformedPoints.front().x, m_TransformedPoints.front().y);
 
-#ifdef BROADPHASE
+#ifdef BROADPHASE_DEBUG
     //Draw debug bounding circle
     glm::vec2 xy1{};
     glm::vec2 xy2{};

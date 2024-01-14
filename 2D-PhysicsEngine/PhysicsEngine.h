@@ -33,11 +33,11 @@ private:
 	SDL_Window* m_pWindow = nullptr;
 	SDL_Renderer* m_pRenderer = nullptr;
 
-	std::vector<std::unique_ptr<RigidBody>> m_RigidBodys;
+	std::vector<std::unique_ptr<RigidBody>> m_RigidBodies{};
 
-	std::unique_ptr<Font> m_FontFPS;
-	std::unique_ptr<Font> m_FontFPSFixed;
-	std::unique_ptr<Font> m_FontAmountBodies;
+	std::unique_ptr<Font> m_FontFPS{};
+	std::unique_ptr<Font> m_FontFPSFixed{};
+	std::unique_ptr<Font> m_FontAmountBodies{};
 
 	//Physics Settings
 	const float m_PixelsPerMeter = 25;
@@ -45,7 +45,7 @@ private:
 	const float m_Gravity = 9.81f;
 	const float m_PhysicsTimeStep;
 
-	CollisionSolver::CollisionData m_DataCollision;
+	CollisionSolver::CollisionData m_DataCollision{};
 
 	int m_IndexCurr{};
 
@@ -53,6 +53,7 @@ private:
 	float m_DeltaTime = 0;
 	float m_DeltaLag = 0;
 	float m_FrameCount = 0;
+	float m_FixedTotalTime = 0;
 
 	float m_fpsTimer = 0;
 	float m_DurationFixed = 0;
@@ -66,6 +67,7 @@ private:
 	int m_MouseX{}, m_MouseY{};
 
 	void FixedUpdate();
+	void NormalUpdate();
 
 	void Draw() const;
 
@@ -73,4 +75,7 @@ private:
 	int Random(int min, int max) const;
 
 	std::vector<SDL_FPoint> GenerateConvexPolygon(int numVertices, float radius) const;
+
+	void PrintExperimentData() const;
+	
 };

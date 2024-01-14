@@ -16,6 +16,8 @@
 #include "Polygon.h"
 #include "glm/trigonometric.hpp"
 
+#define SAVE_FPS_DATA
+
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
 :m_PhysicsTimeStep(physicsTimeStep)
@@ -36,31 +38,57 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     m_FontFPSFixed = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 0, 0, 255 }, 100, 10, m_pRenderer);
     m_FontAmountBodies = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 255, 0, 255 }, 750, 10, m_pRenderer);
 
-    std::vector<SDL_FPoint> points{};
-
-    points.push_back(SDL_FPoint{ 20.f, 60.f });
-    points.push_back(SDL_FPoint{ -40.f, 20.f });
-    points.push_back(SDL_FPoint{ -20.f, -60.f });
-    points.push_back(SDL_FPoint{ 20.f, -60.f });
-    points.push_back(SDL_FPoint{ 40.f, 20.f });
-
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 10, 500, 5.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), 400, 500, 5.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6, 8), 40.f)), 10, 500, 5.f));
-    //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6, 8), 30.f)), 400, 300, 1.f));
-
     //Static circle in the middle
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(50.f), 200.f, 300.f, 0.f, 1.f));
+    m_RigidBodies.push_back(std::make_unique<RigidBody>(Circle(50.f), 200.f, 300.f, 0.f, 1.f));
     
     //Sloped box
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(50.f, 50.f), 500.f, 300.f, 0.f, 0.5f, 0.5f, static_cast<float>(M_PI) * 0.45f));
+    m_RigidBodies.push_back(std::make_unique<RigidBody>(Box(50.f, 50.f), 500.f, 300.f, 0.f, 0.5f, 0.5f, static_cast<float>(M_PI) * 0.45f));
     
 	//Bottom floor
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(windowWidth/2.f, 30.f), windowWidth/2.f, windowHeight - 15.f, 0.f, 0.2f, 0.2f));
+    m_RigidBodies.push_back(std::make_unique<RigidBody>(Box(windowWidth/2.f, 30.f), windowWidth/2.f, windowHeight - 15.f, 0.f, 0.2f, 0.2f));
     
     //Sidewalls
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, windowHeight/2.f), 15.f, windowHeight / 2.f - 45.f, 0.f, 0.2f, 0.2f));
-    m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(30.f, windowHeight/2.f), windowWidth - 15.f, windowHeight / 2.f - 45.f, 0.f, 0.2f, 0.2f));
+    m_RigidBodies.push_back(std::make_unique<RigidBody>(Box(30.f, windowHeight/2.f), 15.f, windowHeight / 2.f - 45.f, 0.f, 0.2f, 0.2f));
+    m_RigidBodies.push_back(std::make_unique<RigidBody>(Box(30.f, windowHeight/2.f), windowWidth - 15.f, windowHeight / 2.f - 45.f, 0.f, 0.2f, 0.2f));
+
+//#pragma region Determinism experiment
+//
+//    m_RigidBodies.push_back(std::make_unique<RigidBody>(Circle(25.f), 400, 100, 10.f));
+//    m_RigidBodies.push_back(std::make_unique<RigidBody>(Circle(25.f), 410, 150, 5.f,0.1f, 0.8f, 20.f));
+//    
+//    m_RigidBodies.push_back(std::make_unique<RigidBody>(Box(50.f, 25.f), 350, 20, 10.f));
+//    m_RigidBodies.push_back(std::make_unique<RigidBody>(Box(20.f, 45.f), 350, 300, 5.f, 0.2f, 0.4f, 10.f));
+//
+//    std::vector<SDL_FPoint> points1;
+//
+//    points1.push_back(SDL_FPoint{ 49.0f, 10.0f });
+//    points1.push_back(SDL_FPoint{ 11.0f, 49.0f });
+//    points1.push_back(SDL_FPoint{ -28.0f, 41.0f });
+//    points1.push_back(SDL_FPoint{ -49.0f, -9.0f });
+//    points1.push_back(SDL_FPoint{ -26.0f, -43.0f });
+//    points1.push_back(SDL_FPoint{ 3.0f, -50.0f });
+//
+//    std::vector<SDL_FPoint> points2;
+//
+//    points2.push_back(SDL_FPoint{ 29.0f, 6.0f });
+//    points2.push_back(SDL_FPoint{ 11.0f, 28.0f });
+//    points2.push_back(SDL_FPoint{ -9.0f, 29.0f });
+//    points2.push_back(SDL_FPoint{ -29.0f, 8.0f });
+//    points2.push_back(SDL_FPoint{ -27.0f, -13.0f });
+//    points2.push_back(SDL_FPoint{ -19.0f, -23.0f });
+//    points2.push_back(SDL_FPoint{ 13.0f, -27.0f });
+//
+//    m_RigidBodies.push_back(std::make_unique<RigidBody>(Polygon(points1, 50.f), 500, 100, 10.f));
+//    m_RigidBodies.push_back(std::make_unique<RigidBody>(Polygon(points2, 50.f), 220, 150, 5.f, 0.8f, 0.2f, 70.f));
+//
+//    //auto test = GenerateConvexPolygon(7, 30.f);
+//    //
+//    //for (auto point : test)
+//    //{
+//    //    std::cout << point.x << ',' << point.y << '\n';
+//    //}
+//
+//#pragma endregion
 
     //Resize list of fps to 3 minutes worth of saving
     m_DurationsFixedData.resize(180);
@@ -105,7 +133,7 @@ void PhysicsEngine::Run()
 	                    }
 						case SDLK_UP:
 	                    {
-                            m_IndexCurr = (m_IndexCurr + 1) % m_RigidBodys.size();
+                            m_IndexCurr = (m_IndexCurr + 1) % m_RigidBodies.size();
 
                             //while(m_RigidBodys[m_IndexCurr]->IsStatic())
                             //{
@@ -128,13 +156,13 @@ void PhysicsEngine::Run()
                    {
                        case SDL_BUTTON_LEFT:
 	                   {
-						  m_RigidBodys.push_back(std::make_unique<RigidBody>(Circle(15.f), static_cast<float>(m_MouseX), static_cast<float>(m_MouseY), 1.f, 0.5f));
+						  m_RigidBodies.push_back(std::make_unique<RigidBody>(Circle(15.f), static_cast<float>(m_MouseX), static_cast<float>(m_MouseY), 1.f, 0.5f));
 	                   }
                        break;
                        case SDL_BUTTON_RIGHT:
 	                   {
                        	  constexpr float size = 25.f;
-						  m_RigidBodys.push_back(std::make_unique<RigidBody>(Box(size, size), m_MouseX, m_MouseY, 1.f, 0.1f, 0.2f));
+						  m_RigidBodies.push_back(std::make_unique<RigidBody>(Box(size, size), m_MouseX, m_MouseY, 1.f, 0.1f, 0.2f));
 	                   }
                        break;
                        case SDL_BUTTON_MIDDLE:
@@ -148,8 +176,8 @@ void PhysicsEngine::Run()
                            //points.push_back(SDL_FPoint{ 30.f, 10.f });
                            //
                            //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), m_MouseX, m_MouseY, 5.f));
-                           const float radius = Random(20.f, 50.f);
-                           m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6,8), radius),radius), m_MouseX, m_MouseY, 1.f));
+                           const float radius = Random(20.f, 30.f);
+                           m_RigidBodies.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6,8), radius),radius), m_MouseX, m_MouseY, 1.f));
                        }
                        break;
 						default:
@@ -159,12 +187,12 @@ void PhysicsEngine::Run()
 	       	   break;
                case SDL_MOUSEMOTION:
                {
-                   if (m_RigidBodys[m_IndexCurr]->IsStatic()) break;
+                   if (m_RigidBodies[m_IndexCurr]->IsStatic()) break;
 
                    //int x, y;
                    SDL_GetMouseState(&m_MouseX, &m_MouseY);
-                   m_RigidBodys[m_IndexCurr]->Pos.x = static_cast<float>(m_MouseX);
-                   m_RigidBodys[m_IndexCurr]->Pos.y = static_cast<float>(m_MouseY);
+                   m_RigidBodies[m_IndexCurr]->Pos.x = static_cast<float>(m_MouseX);
+                   m_RigidBodies[m_IndexCurr]->Pos.y = static_cast<float>(m_MouseY);
                    break;
                }
                default:
@@ -176,6 +204,7 @@ void PhysicsEngine::Run()
 
         //Fixed update loop
         FixedUpdate();
+        //NormalUpdate();
 
         //Draw loop
         Draw();
@@ -196,28 +225,32 @@ void PhysicsEngine::Run()
         {
             m_FontFPS->SetText(std::to_string(static_cast<int>(m_FrameCount/ m_fpsTimer)).c_str());
             m_FontFPSFixed->SetText(std::to_string(m_DurationFixed/m_FixedLoopAmount).c_str());
-            m_FontAmountBodies->SetText(std::to_string(m_RigidBodys.size()).c_str());
+            m_FontAmountBodies->SetText(std::to_string(m_RigidBodies.size()).c_str());
 
             //Reset timer
             m_FrameCount = 0;
             m_fpsTimer = 0;
 
+			#ifdef SAVE_FPS_DATA
             //Saving FPS data
             m_DurationsFixedData[m_TotalDurationsData] = m_DurationFixed/m_FixedLoopAmount;
-            m_AmountBodiesData[m_TotalDurationsData] = m_RigidBodys.size();
+            m_AmountBodiesData[m_TotalDurationsData] = m_RigidBodies.size();
             ++m_TotalDurationsData;
 
             m_DurationFixed = 0;
             m_FixedLoopAmount = 0;
+#           endif
         }
 
-        if (m_RigidBodys[m_IndexCurr]->IsStatic() == false)
+        if (m_RigidBodies[m_IndexCurr]->IsStatic() == false)
         {
             //int x, y;
             SDL_GetMouseState(&m_MouseX, &m_MouseY);
-            m_RigidBodys[m_IndexCurr]->Pos.x = static_cast<float>(m_MouseX);
-            m_RigidBodys[m_IndexCurr]->Pos.y = static_cast<float>(m_MouseY);
+            m_RigidBodies[m_IndexCurr]->Pos.x = static_cast<float>(m_MouseX);
+            m_RigidBodies[m_IndexCurr]->Pos.y = static_cast<float>(m_MouseY);
         }
+
+        //if (m_FixedTotalTime >= 15.f) quit = true;
     }
 
     //Delete the SDL window/renderer
@@ -227,11 +260,7 @@ void PhysicsEngine::Run()
     //Quit SDL
     SDL_Quit();
 
-
-    for(uint32_t i{}; i < m_TotalDurationsData; ++i)
-    {
-        std::cout << m_DurationsFixedData[i] << " || " << m_AmountBodiesData[i] << '\n';
-    }
+    PrintExperimentData();
 }
 
 void PhysicsEngine::FixedUpdate()
@@ -247,7 +276,7 @@ void PhysicsEngine::FixedUpdate()
     {
         const auto startFixed = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count();
 
-        for (const auto& body : m_RigidBodys)
+        for (const auto& body : m_RigidBodies)
         {
             //Gravity
             body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
@@ -257,7 +286,7 @@ void PhysicsEngine::FixedUpdate()
             body->colliding = false;
         }
 
-        const int bodiesSize = static_cast<int>(m_RigidBodys.size());
+        const int bodiesSize = static_cast<int>(m_RigidBodies.size());
 
         //Loop trough all rigidbodies, except the last one
         for (int i{}; i <= bodiesSize - 1; ++i)
@@ -267,13 +296,13 @@ void PhysicsEngine::FixedUpdate()
             {
                 CollisionSolver::CollisionData data{};
 
-                if (CollisionSolver::IsColliding(m_RigidBodys[i].get(), m_RigidBodys[j].get(), data))
+                if (CollisionSolver::IsColliding(m_RigidBodies[i].get(), m_RigidBodies[j].get(), data))
                 {
                     m_DataCollision = data;
 
                     //Change color when collidng - DEBUG
-                    m_RigidBodys[i]->colliding = true;
-                    m_RigidBodys[j]->colliding = true;
+                    m_RigidBodies[i]->colliding = true;
+                    m_RigidBodies[j]->colliding = true;
                 }
             }
         }
@@ -284,7 +313,45 @@ void PhysicsEngine::FixedUpdate()
 
         m_DurationFixed += static_cast<float>(endFixed - startFixed) * 0.001f;
         ++m_FixedLoopAmount;
+
+        m_FixedTotalTime += m_PhysicsTimeStep;
     }
+}
+
+void PhysicsEngine::NormalUpdate()
+{
+    for (const auto& body : m_RigidBodies)
+    {
+        //Gravity
+        body->AddForce(glm::vec2(0.f, m_PixelsPerMeter * m_Gravity * body->Mass));
+
+        //Update
+        body->Update(m_DeltaTime);
+        body->colliding = false;
+    }
+
+    const int bodiesSize = static_cast<int>(m_RigidBodies.size());
+
+    //Loop trough all rigidbodies, except the last one
+    for (int i{}; i <= bodiesSize - 1; ++i)
+    {
+        //Each rigidbody checks all the bodies right of it, to avoid duplicate checking
+        for (int j{ i + 1 }; j < bodiesSize; ++j)
+        {
+            CollisionSolver::CollisionData data{};
+
+            if (CollisionSolver::IsColliding(m_RigidBodies[i].get(), m_RigidBodies[j].get(), data))
+            {
+                m_DataCollision = data;
+
+                //Change color when collidng - DEBUG
+                m_RigidBodies[i]->colliding = true;
+                m_RigidBodies[j]->colliding = true;
+            }
+        }
+    }
+
+    m_FixedTotalTime += m_DeltaTime;
 }
 
 void PhysicsEngine::Draw() const
@@ -295,7 +362,7 @@ void PhysicsEngine::Draw() const
 
     //Set the render color of drawed objects
     //SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
-    for (const auto& body : m_RigidBodys)
+    for (const auto& body : m_RigidBodies)
     {
         body->Draw(m_pRenderer);
     }
@@ -344,4 +411,33 @@ std::vector<SDL_FPoint> PhysicsEngine::GenerateConvexPolygon(const int numVertic
     }
 
     return points;
+}
+
+void PhysicsEngine::PrintExperimentData() const
+{
+	#ifdef SAVE_FPS_DATA
+    //FPS DATA
+    for (uint32_t i{}; i < m_TotalDurationsData; ++i)
+    {
+        std::cout << m_DurationsFixedData[i] << " || " << m_AmountBodiesData[i] << '\n';
+    }
+	#endif
+
+    //uint32_t bodyIndex{};
+
+    ////BODY DATA
+    //for (uint32_t i{}; i < m_RigidBodies.size(); ++i)
+    //{
+    //    const auto& body = m_RigidBodies[i];
+    //
+    //    if(body->IsStatic()) continue;
+    //
+    //    ++bodyIndex;
+    //
+    //    std::cout << bodyIndex << ":\n"
+    //	<< body->Pos.x << ", " << body->Pos.y << '\n'
+    //    << body->Velocity.x << ", " << body->Velocity.y << '\n'
+    //    << body->Rot << '\n';
+    //
+    //}
 }

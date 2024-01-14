@@ -41,7 +41,7 @@ public:
 
 protected:
 
-	Shape(const float boundingRadius) :m_BoundingRadius(boundingRadius) {};
+	Shape(const float boundingRadius) :m_BoundingRadius(boundingRadius) {}
 
 	float m_BoundingRadius{};
 
