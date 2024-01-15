@@ -31,9 +31,6 @@ public:
 	void ClearForces() { m_AccumulatedForce = glm::vec2{}; }
 	void ClearTorque() { m_AccumulatedTorque = 0; }
 
-	void GenerateDrag(const float dragCoefficient);
-	void GenerateFriction(const float frictionCoefficient);
-
 	void Update(const float deltaTime);
 	void Draw(SDL_Renderer* pRenderer) const;
 

@@ -43,11 +43,6 @@ RigidBody::RigidBody(const Shape& colliderShape, const int x, const int y, const
 
 RigidBody::~RigidBody() = default;
 
-void RigidBody::AddImpulse(const glm::vec2& impulse)
-{
-	if (IsStatic()) return; Velocity += impulse * InvMass;
-}
-
 void RigidBody::AddImpulse(const glm::vec2& impulse, const glm::vec2& dir)
 {
 	if(IsStatic()) return;
@@ -56,28 +51,14 @@ void RigidBody::AddImpulse(const glm::vec2& impulse, const glm::vec2& dir)
 	AngularVelocity += ((dir.x * impulse.y) - (dir.y * impulse.x)) * InvI;
 }
 
-void RigidBody::GenerateDrag(const float dragCoefficient)
-{
-	//Fd = k * ||v||^2 * -Vn
-	const float length2 = glm::length2(Velocity);
-
-	if (length2 > 0) AddForce(dragCoefficient * length2 * glm::normalize(Velocity * -1.f));
-}
-
-void RigidBody::GenerateFriction(const float frictionCoefficient)
-{
-	//Ff = k * -Vn
-	AddForce(frictionCoefficient * glm::normalize(Velocity * -1.f));
-}
-
 void RigidBody::Update(const float deltaTime)
 {
 	//Static objects shouldnt update
 	if(IsStatic()) return;
 
-	//EulerIntegration(deltaTime);
+	EulerIntegration(deltaTime);
 	//VerletIntegration(deltaTime);
-	RK4Integration(deltaTime);
+	//RK4Integration(deltaTime);
 
 	//Rotation should always be in bounds of 360 degrees
 	Rot = std::fmodf(Rot, m_PI2);
