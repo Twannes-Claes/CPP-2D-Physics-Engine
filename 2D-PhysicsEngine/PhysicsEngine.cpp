@@ -16,7 +16,7 @@
 #include "Polygon.h"
 #include "glm/trigonometric.hpp"
 
-#define SAVE_FPS_DATA
+//#define SAVE_FPS_DATA
 
 PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, const float physicsTimeStep)
 //Initialize the physicsTimeStep
@@ -26,7 +26,7 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
     SDL_Init(SDL_INIT_VIDEO);
 
     //Create the window
-    m_pWindow = SDL_CreateWindow("TwannesClaes-Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, 0);
+    m_pWindow = SDL_CreateWindow("TwannesClaes-CustomPhysicsEngine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, 0);
     m_pRenderer = SDL_CreateRenderer(m_pWindow, -1, SDL_RENDERER_ACCELERATED);
 
     //Disable VSYNC
@@ -34,9 +34,9 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
 
     const char* fontName{ "Burbank Big Condensed Black.otf" };
 
-    m_FontFPS = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 255, 255, 255 }, 10, 10, m_pRenderer);
-    m_FontFPSFixed = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 0, 0, 255 }, 100, 10, m_pRenderer);
-    m_FontAmountBodies = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 255, 0, 255 }, 750, 10, m_pRenderer);
+    m_FontFPS = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 255, 255, 255 }, 65, 10, m_pRenderer);
+    m_FontFPSFixed = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 0, 0, 255 }, 320, 10, m_pRenderer);
+    m_FontAmountBodies = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 255, 0, 255 }, 650, 10, m_pRenderer);
 
     //Static circle in the middle
     m_RigidBodies.push_back(std::make_unique<RigidBody>(Circle(50.f), 200.f, 300.f, 0.f, 1.f));
@@ -131,6 +131,11 @@ void PhysicsEngine::Run()
                         	   quit = true;
                         	   break;
 	                    }
+                        case SDLK_LCTRL:
+                        {
+                            m_IsCtrlPressed = true;
+                            break;
+                        }
 						case SDLK_UP:
 	                    {
                             m_IndexCurr = (m_IndexCurr + 1) % m_RigidBodies.size();
@@ -147,22 +152,28 @@ void PhysicsEngine::Run()
                    }
 	           	   break;
                }
+               case SDL_KEYUP:
+               {
+                   if (event.key.keysym.sym == SDLK_LCTRL) m_IsCtrlPressed = false;
+               }
 	           case SDL_MOUSEBUTTONDOWN:
 		       {
                     //Setup for mouse movement to spawn objects
                    SDL_GetMouseState(&m_MouseX, &m_MouseY);
 
+                   const float mass = m_IsCtrlPressed ? 0.f : 1.f;
+
                    switch (event.button.button )
                    {
                        case SDL_BUTTON_LEFT:
 	                   {
-						  m_RigidBodies.push_back(std::make_unique<RigidBody>(Circle(15.f), static_cast<float>(m_MouseX), static_cast<float>(m_MouseY), 1.f, 0.5f));
+						  m_RigidBodies.push_back(std::make_unique<RigidBody>(Circle(15.f), static_cast<float>(m_MouseX), static_cast<float>(m_MouseY), mass, 0.5f));
 	                   }
                        break;
                        case SDL_BUTTON_RIGHT:
 	                   {
                        	  constexpr float size = 25.f;
-						  m_RigidBodies.push_back(std::make_unique<RigidBody>(Box(size, size), m_MouseX, m_MouseY, 1.f, 0.1f, 0.2f));
+						  m_RigidBodies.push_back(std::make_unique<RigidBody>(Box(size, size), m_MouseX, m_MouseY, mass, 0.1f, 0.2f));
 	                   }
                        break;
                        case SDL_BUTTON_MIDDLE:
@@ -176,8 +187,8 @@ void PhysicsEngine::Run()
                            //points.push_back(SDL_FPoint{ 30.f, 10.f });
                            //
                            //m_RigidBodys.push_back(std::make_unique<RigidBody>(Polygon(points), m_MouseX, m_MouseY, 5.f));
-                           const float radius = Random(20.f, 30.f);
-                           m_RigidBodies.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6,8), radius),radius), m_MouseX, m_MouseY, 1.f));
+                           const float radius = Random(20.f, 50.f);
+                           m_RigidBodies.push_back(std::make_unique<RigidBody>(Polygon(GenerateConvexPolygon(Random(6,12), radius),radius), m_MouseX, m_MouseY, mass));
                        }
                        break;
 						default:
@@ -223,9 +234,13 @@ void PhysicsEngine::Run()
         // Calculate average FPS every second
         if (m_fpsTimer >= 1.f)
         {
-            m_FontFPS->SetText(std::to_string(static_cast<int>(m_FrameCount/ m_fpsTimer)).c_str());
-            m_FontFPSFixed->SetText(std::to_string(m_DurationFixed/m_FixedLoopAmount).c_str());
-            m_FontAmountBodies->SetText(std::to_string(m_RigidBodies.size()).c_str());
+            const std::string fpsText = "fps: " + std::to_string(static_cast<int>(m_FrameCount / m_fpsTimer));
+            const std::string milliText = "ms: " + std::to_string(m_DurationFixed / m_FixedLoopAmount);
+            const std::string amountText = "amount: " + std::to_string(m_RigidBodies.size());
+
+            m_FontFPS->SetText(fpsText.c_str());
+            m_FontFPSFixed->SetText(milliText.c_str());
+            m_FontAmountBodies->SetText(amountText.c_str());
 
             //Reset timer
             m_FrameCount = 0;

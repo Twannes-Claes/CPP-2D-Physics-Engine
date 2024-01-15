@@ -66,6 +66,8 @@ private:
 	//MOusePos
 	int m_MouseX{}, m_MouseY{};
 
+	bool m_IsCtrlPressed{};
+
 	void FixedUpdate();
 	void NormalUpdate();
 
