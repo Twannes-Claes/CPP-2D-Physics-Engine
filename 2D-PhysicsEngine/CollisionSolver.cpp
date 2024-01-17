@@ -15,55 +15,6 @@
 #define ShapeType Shape::Type
 
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
-//	const Shape::Type aType = a->GetShape()->GetType();
-//	const Shape::Type bType = b->GetShape()->GetType();
-//
-//	if(aType == Shape::Type::Circle && bType == Shape::Type::Circle)
-//	{
-//		return CollisionSolver::CircleVSCircle(a, b, data, false);
-//	}
-//
-//	const bool isAPoly = aType == Shape::Type::Polygon || aType == Shape::Type::Box;
-//	const bool isBPoly = bType == Shape::Type::Polygon || bType == Shape::Type::Box;
-//
-//	if (isAPoly && isBPoly)
-//	{
-//#ifdef BROADPHASE
-//		if(CollisionSolver::CircleVSCircle(a,b, data, true))
-//		{
-//#endif
-//
-//			return CollisionSolver::PolyVSPoly(a, b, data);
-//#ifdef BROADPHASE
-//		}
-//#endif
-//	}
-//
-//	if(aType == Shape::Type::Circle && isBPoly)
-//	{
-//#ifdef BROADPHASE
-//		if (CollisionSolver::CircleVSCircle(a, b, data, true))
-//		{
-//#endif
-//			return CollisionSolver::CircleVsPoly(b, a, data);
-//#ifdef BROADPHASE
-//		}
-//#endif
-//	}
-//
-//	if (isAPoly && bType == Shape::Type::Circle)
-//	{
-//#ifdef BROADPHASE
-//		if (CollisionSolver::CircleVSCircle(a, b, data, true))
-//		{
-//#endif
-//			return CollisionSolver::CircleVsPoly(a, b, data);
-//#ifdef BROADPHASE
-//		}
-//#endif
-//	}
-//
-//	return false;
 {
 	const ShapeType cacheBType = b->GetShape()->GetType();
 

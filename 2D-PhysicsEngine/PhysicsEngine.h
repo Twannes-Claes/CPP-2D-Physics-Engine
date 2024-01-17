@@ -4,8 +4,9 @@
 #include <vector>
 
 #include "CollisionSolver.h"
+#include "RigidBody.h"
 
-class RigidBody;
+//class RigidBody;
 class Font;
 class CollisionSolver;
 
