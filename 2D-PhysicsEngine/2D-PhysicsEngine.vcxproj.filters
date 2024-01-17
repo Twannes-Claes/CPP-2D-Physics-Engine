@@ -30,62 +30,62 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Core\main.cpp">
       <Filter>Engine Files</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsEngine.cpp">
+    <ClCompile Include="Core\PhysicsEngine.cpp">
       <Filter>Engine Files</Filter>
     </ClCompile>
-    <ClCompile Include="Font.cpp">
+    <ClCompile Include="Core\Font.cpp">
       <Filter>Game Files\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Box.cpp">
+    <ClCompile Include="Physics\Box.cpp">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="Circle.cpp">
+    <ClCompile Include="Physics\Circle.cpp">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionSolver.cpp">
+    <ClCompile Include="Physics\CollisionSolver.cpp">
       <Filter>Game Files\Physics\Collision</Filter>
     </ClCompile>
-    <ClCompile Include="RigidBody.cpp">
+    <ClCompile Include="Physics\RigidBody.cpp">
       <Filter>Game Files\Physics\Body</Filter>
     </ClCompile>
-    <ClCompile Include="Polygon.cpp">
+    <ClCompile Include="Physics\Polygon.cpp">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PhysicsEngine.h">
+    <ClInclude Include="Core\PhysicsEngine.h">
       <Filter>Engine Files</Filter>
     </ClInclude>
-    <ClInclude Include="Font.h">
+    <ClInclude Include="Core\Font.h">
       <Filter>Game Files\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Box.h">
+    <ClInclude Include="Physics\Box.h">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClInclude>
-    <ClInclude Include="Circle.h">
+    <ClInclude Include="Physics\Circle.h">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionSolver.h">
+    <ClInclude Include="Physics\CollisionSolver.h">
       <Filter>Game Files\Physics\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="Shape.h">
+    <ClInclude Include="Physics\Shape.h">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClInclude>
-    <ClInclude Include="RigidBody.h">
+    <ClInclude Include="Physics\RigidBody.h">
       <Filter>Game Files\Physics\Body</Filter>
     </ClInclude>
-    <ClInclude Include="Polygon.h">
+    <ClInclude Include="Physics\Polygon.h">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Font Include="ARCADECLASSIC.TTF">
+    <Font Include="Resources\ARCADECLASSIC.TTF">
       <Filter>Resource Files</Filter>
     </Font>
-    <Font Include="Burbank Big Condensed Black.otf">
+    <Font Include="Resources\Burbank Big Condensed Black.otf">
       <Filter>Resource Files</Filter>
     </Font>
   </ItemGroup>

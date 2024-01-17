@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include "SDL_render.h"
-#include "glm/vec2.hpp"
+#include "../glm/vec2.hpp"
 
 class RigidBody;
 

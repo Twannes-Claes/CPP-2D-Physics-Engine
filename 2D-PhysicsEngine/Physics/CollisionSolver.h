@@ -1,5 +1,5 @@
 #pragma once
-#include "glm/vec2.hpp"
+#include "../glm/vec2.hpp"
 
 class Polygon;
 class RigidBody;

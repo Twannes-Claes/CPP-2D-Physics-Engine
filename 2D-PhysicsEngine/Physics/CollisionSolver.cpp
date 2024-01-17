@@ -5,10 +5,10 @@
 
 #pragma warning(push)
 #pragma warning(disable: 4201) // Disable warning C4201
-#include <iostream>
-
-#include "glm/gtx/norm.hpp"
+#include "../glm/gtx/norm.hpp"
 #pragma warning(pop)
+
+#include <iostream>
 
 #define BROADPHASE
 

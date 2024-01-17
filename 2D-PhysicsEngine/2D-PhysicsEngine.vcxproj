@@ -159,28 +159,28 @@ copy "$(SolutionDir)SDL2\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Box.cpp" />
-    <ClCompile Include="Circle.cpp" />
-    <ClCompile Include="CollisionSolver.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Font.cpp" />
-    <ClCompile Include="Polygon.cpp" />
-    <ClCompile Include="RigidBody.cpp" />
-    <ClCompile Include="PhysicsEngine.cpp" />
+    <ClCompile Include="Physics\Box.cpp" />
+    <ClCompile Include="Physics\Circle.cpp" />
+    <ClCompile Include="Physics\CollisionSolver.cpp" />
+    <ClCompile Include="Core\main.cpp" />
+    <ClCompile Include="Core\Font.cpp" />
+    <ClCompile Include="Physics\Polygon.cpp" />
+    <ClCompile Include="Physics\RigidBody.cpp" />
+    <ClCompile Include="Core\PhysicsEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Box.h" />
-    <ClInclude Include="Circle.h" />
-    <ClInclude Include="CollisionSolver.h" />
-    <ClInclude Include="Font.h" />
-    <ClInclude Include="Polygon.h" />
-    <ClInclude Include="RigidBody.h" />
-    <ClInclude Include="PhysicsEngine.h" />
-    <ClInclude Include="Shape.h" />
+    <ClInclude Include="Physics\Box.h" />
+    <ClInclude Include="Physics\Circle.h" />
+    <ClInclude Include="Physics\CollisionSolver.h" />
+    <ClInclude Include="Core\Font.h" />
+    <ClInclude Include="Physics\Polygon.h" />
+    <ClInclude Include="Physics\RigidBody.h" />
+    <ClInclude Include="Core\PhysicsEngine.h" />
+    <ClInclude Include="Physics\Shape.h" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="ARCADECLASSIC.TTF" />
-    <Font Include="Burbank Big Condensed Black.otf" />
+    <Font Include="Resources\ARCADECLASSIC.TTF" />
+    <Font Include="Resources\Burbank Big Condensed Black.otf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

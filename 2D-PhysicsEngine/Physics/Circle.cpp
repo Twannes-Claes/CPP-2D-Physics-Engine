@@ -2,7 +2,7 @@
 
 #pragma warning(push)
 #pragma warning(disable: 4201) // Disable warning C4201
-#include "glm/gtx/norm.hpp"
+#include "../glm/gtx/norm.hpp"
 #pragma warning(pop)
 
 

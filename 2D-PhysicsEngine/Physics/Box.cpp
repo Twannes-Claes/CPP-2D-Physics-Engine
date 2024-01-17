@@ -1,6 +1,6 @@
 #include "Box.h"
 
-#include "glm/ext/quaternion_geometric.hpp"
+#include "../glm/ext/quaternion_geometric.hpp"
 
 Box::Box(const float w, const float h) :Box(glm::vec2{w,h}) {}
 

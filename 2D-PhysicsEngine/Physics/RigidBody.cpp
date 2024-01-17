@@ -3,7 +3,7 @@
 #pragma warning(push)
 #pragma warning(disable: 4201) // Disable warning C4201
 #include "Circle.h"
-#include "glm/gtx/norm.hpp"
+#include "../glm/gtx/norm.hpp"
 #pragma warning(pop)
 
 const float RigidBody::m_PI2 = static_cast<float>(M_PI) * 2.f;

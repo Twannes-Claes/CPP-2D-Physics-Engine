@@ -1,7 +1,7 @@
 #include "Polygon.h"
 
 #include "CollisionSolver.h"
-#include "glm/ext/matrix_transform.hpp"
+#include "../glm/ext/matrix_transform.hpp"
 
 //#define BROADPHASE_DEBUG
 

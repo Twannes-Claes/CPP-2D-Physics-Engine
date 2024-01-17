@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
-#include "CollisionSolver.h"
-#include "RigidBody.h"
+#include "../Physics/CollisionSolver.h"
+#include "../Physics/RigidBody.h"
 
 //class RigidBody;
 class Font;

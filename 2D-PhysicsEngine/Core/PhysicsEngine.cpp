@@ -5,16 +5,16 @@
 #include <random>
 #include <string>
 
-#include "SDL2/include/SDL.h"
+#include "../SDL2/include/SDL.h"
 #include "Font.h"
 
-#include "CollisionSolver.h"
-#include "RigidBody.h"
+#include "../Physics/CollisionSolver.h"
+#include "../Physics/RigidBody.h"
 
-#include "Circle.h"
-#include "Box.h"
-#include "Polygon.h"
-#include "glm/trigonometric.hpp"
+#include "../Physics/Circle.h"
+#include "../Physics/Box.h"
+#include "../Physics/Polygon.h"
+#include "../glm/trigonometric.hpp"
 
 //#define SAVE_FPS_DATA
 
