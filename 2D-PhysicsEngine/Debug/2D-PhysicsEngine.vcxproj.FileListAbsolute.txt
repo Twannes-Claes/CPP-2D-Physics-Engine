@@ -1,0 +1,2 @@
+D:\Year_3\Bachelor\2D-PhysicsEngine\Debug\2D-PhysicsEngine.exe
+D:\Year_3\Bachelor\Repo\CPP-2D-Physics-Engine\2D-PhysicsEngine\Debug\2D-PhysicsEngine.exe
