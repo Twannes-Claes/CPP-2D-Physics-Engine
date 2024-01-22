@@ -4,7 +4,6 @@
 class Polygon;
 class RigidBody;
 
-
 class CollisionSolver
 {
 public:

@@ -3,15 +3,17 @@
 
 PhysicsWorld::~PhysicsWorld() = default;
 
-void PhysicsWorld::Update(const float dt)
+//TODO Spatial partiationing, Constraints, Multiple Contact points, Fix Circle vs Poly inside bug
+
+void PhysicsWorld::Update(const float timeStep)
 {
     for (const auto& body : m_RigidBodies)
     {
-        //Gravity
-        body->AddForce(glm::vec2(0.f, static_cast<float>(m_PixelsPerMeter) * Gravity * body->Mass));
+        //Adding the gravity weight force
+        body->AddForce(glm::vec2{ static_cast<float>(m_PixelsPerMeter) * Gravity.x * body->Mass, static_cast<float>(m_PixelsPerMeter)* Gravity.y * body->Mass });
 
         //Update
-        body->Update(dt);
+        body->Update(timeStep);
         body->colliding = false;
     }
 

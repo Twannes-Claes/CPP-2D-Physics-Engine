@@ -6,11 +6,13 @@
 #include "../SDL2/include/SDL.h"
 #include <string>
 
-//Physics Includes
+//Physics includes
 #include "../PhysicsWorld.h"
 #include "../Physics/Circle.h"
 #include "../Physics/Box.h"
 #include "../Physics/Polygon.h"
+
+//Math includes
 #include "../glm/trigonometric.hpp"
 
 //#define MOVE_OBJECTS_MOUSE
@@ -240,8 +242,8 @@ std::vector<SDL_FPoint> PhysicsEngine::GenerateConvexPolygon(const int numVertic
         float angle = static_cast<float>(i) * (2.f * static_cast<float>(M_PI)) / static_cast<float>(numVertices);
         angle += static_cast<float>((rand() % 60 - 30)) * (static_cast<float>(M_PI) / 180.f);
 
-        const float x = radius * std::cos(angle);
-        const float y = radius * std::sin(angle);
+        const float x = radius * glm::cos(angle);
+        const float y = radius * glm::sin(angle);
 
         points.push_back({ x, y });
     }

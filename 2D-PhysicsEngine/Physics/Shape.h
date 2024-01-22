@@ -29,10 +29,10 @@ public:
 
 	virtual std::unique_ptr<Shape> Clone() const = 0;
 
-	inline float GetBoundingRadius() const { return m_BoundingRadius; }
+	float GetBoundingRadius() const { return m_BoundingRadius; }
 
 	//TODO: Make this dirty flag
-	inline void UpdatePosRot(const float rigidBodyRot, const glm::vec2& pos) { m_RigidBodyRot = rigidBodyRot; m_RigidBodyPos = pos; }
+	void UpdatePosRot(const float rigidBodyRot, const glm::vec2& pos) { m_RigidBodyRot = rigidBodyRot; m_RigidBodyPos = pos; }
 
 	Shape(const Shape& other) = delete;
 	Shape(Shape&& other) = delete;

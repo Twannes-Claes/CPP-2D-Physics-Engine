@@ -2,15 +2,9 @@
 
 #include <memory>
 #include <vector>
-#include <functional>
-
-#include "../Physics/CollisionSolver.h"
-#include "../Physics/RigidBody.h"
 
 class PhysicsWorld;
-//class RigidBody;
 class Font;
-class CollisionSolver;
 
 struct SDL_Window;
 struct SDL_Renderer;

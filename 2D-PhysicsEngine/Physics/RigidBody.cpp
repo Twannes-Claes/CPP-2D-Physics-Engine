@@ -43,6 +43,13 @@ RigidBody::RigidBody(const Shape& colliderShape, const int x, const int y, const
 
 RigidBody::~RigidBody() = default;
 
+void RigidBody::AddImpulse(const glm::vec2& impulse)
+{
+	if (IsStatic()) return;
+
+	Velocity += impulse * InvMass;
+}
+
 void RigidBody::AddImpulse(const glm::vec2& impulse, const glm::vec2& dir)
 {
 	if(IsStatic()) return;
