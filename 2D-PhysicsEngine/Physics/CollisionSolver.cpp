@@ -8,10 +8,6 @@
 #include "../glm/gtx/norm.hpp"
 #pragma warning(pop)
 
-#include <iostream>
-
-#define BROADPHASE
-
 #define ShapeType Shape::Type
 
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
@@ -31,16 +27,7 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 				case ShapeType::Polygon:
 				case ShapeType::Box:
 				{
-					#ifdef BROADPHASE
-					if (CollisionSolver::CircleVSCircle(a, b, data, true))
-					{
-						return CollisionSolver::PolyVsCircle(b, a, data);
-					}
-
-					return false;
-					#else
 					return CollisionSolver::PolyVsCircle(b, a, data);
-					#endif
 				}
 			}
 			break;
@@ -53,30 +40,12 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 			{
 				case ShapeType::Circle:
 				{
-					#ifdef BROADPHASE
-					if (CollisionSolver::CircleVSCircle(a, b, data, true))
-					{
-						return CollisionSolver::PolyVsCircle(a, b, data);
-					}
-
-					return false;
-					#else
 					return CollisionSolver::PolyVsCircle(a, b, data);
-					#endif
 				}
 				case ShapeType::Polygon:
 				case ShapeType::Box:
 				{
-					#ifdef BROADPHASE
-					if (CollisionSolver::CircleVSCircle(a, b, data, true))
-					{
-						return CollisionSolver::PolyVSPoly(a, b, data);
-					}
-
-					return false;
-					#else
 					return CollisionSolver::PolyVSPoly(a, b, data);
-					#endif
 				}
 			}
 		}

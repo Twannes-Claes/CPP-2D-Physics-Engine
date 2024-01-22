@@ -7,9 +7,7 @@ Box::Box(const float w, const float h) :Box(glm::vec2{w,h}) {}
 Box::Box(const glm::vec2& dimensions):
 Polygon(GetBoxVertices(dimensions), glm::length(dimensions)),
 m_Dimensions(dimensions)
-{
-	
-}
+{}
 
 std::unique_ptr<Shape> Box::Clone() const
 {
@@ -36,6 +34,9 @@ float Box::GetMomentOfInteria(const float mass) const
 
 std::vector<SDL_FPoint> Box::GetBoxVertices(const glm::vec2& dimensions) const
 {
+	//If local vertices are already assigned return those
+	//if (!m_Vertices.empty()) return m_Vertices;
+
 	std::vector<SDL_FPoint> points;
 
 	points.push_back({ -dimensions.x, dimensions.y });

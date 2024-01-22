@@ -54,6 +54,9 @@
     <ClCompile Include="Physics\Polygon.cpp">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsWorld.cpp">
+      <Filter>Game Files\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\PhysicsEngine.h">
@@ -79,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="Physics\Polygon.h">
       <Filter>Game Files\Physics\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsWorld.h">
+      <Filter>Game Files\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

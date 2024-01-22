@@ -130,7 +130,7 @@ copy "$(SolutionDir)SDL2\lib\x86\SDL2_ttf.dll" "$(TargetDir)"</Command>
       <AdditionalDependencies>SDL2.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy " SDL2\lib\x64\SDL2.dll" "$(TargetDir)"
+      <Command>copy "$(SolutionDir)SDL2\lib\x64\SDL2.dll" "$(TargetDir)"
 copy "$(SolutionDir)SDL2\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -154,11 +154,12 @@ copy "$(SolutionDir)SDL2\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
       <AdditionalDependencies>SDL2.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy " SDL2\lib\x64\SDL2.dll" "$(TargetDir)"
+      <Command>copy "$(SolutionDir)SDL2\lib\x64\SDL2.dll" "$(TargetDir)"
 copy "$(SolutionDir)SDL2\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="PhysicsWorld.cpp" />
     <ClCompile Include="Physics\Box.cpp" />
     <ClCompile Include="Physics\Circle.cpp" />
     <ClCompile Include="Physics\CollisionSolver.cpp" />
@@ -169,6 +170,7 @@ copy "$(SolutionDir)SDL2\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
     <ClCompile Include="Core\PhysicsEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PhysicsWorld.h" />
     <ClInclude Include="Physics\Box.h" />
     <ClInclude Include="Physics\Circle.h" />
     <ClInclude Include="Physics\CollisionSolver.h" />
