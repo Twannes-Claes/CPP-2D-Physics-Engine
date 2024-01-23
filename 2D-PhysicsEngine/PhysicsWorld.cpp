@@ -1,6 +1,8 @@
 #include "PhysicsWorld.h"
 #include "SDL2/include/SDL_render.h"
 
+//#define DEBUG_CONTACTS
+
 PhysicsWorld::~PhysicsWorld() = default;
 
 //TODO Spatial partiationing, Constraints, Multiple Contact points, Fix Circle vs Poly inside bug, disconnect rendering from physics
@@ -45,9 +47,17 @@ void PhysicsWorld::Draw(SDL_Renderer* pRenderer) const
     SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
     for (const auto& body : m_RigidBodies)
     {
+        if(body->IsStatic())
+        {
+            SDL_SetRenderDrawColor(pRenderer, 10, 10, 220, 255);
+			body->Draw(pRenderer);
+			SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
+	        continue;
+        }
         body->Draw(pRenderer);
     }
 
+	#ifdef DEBUG_CONTACTS
     SDL_SetRenderDrawColor(pRenderer, 0, 0, 255, 255);
     
     const SDL_FRect startPoint = SDL_FRect{ m_DataCollision.start.x - 2.f, m_DataCollision.start.y - 2.f, 4.f, 4.f };
@@ -57,6 +67,7 @@ void PhysicsWorld::Draw(SDL_Renderer* pRenderer) const
     SDL_RenderDrawRectF(pRenderer, &endPoint);
     
     SDL_RenderDrawLineF(pRenderer, m_DataCollision.start.x, m_DataCollision.start.y, m_DataCollision.start.x + m_DataCollision.normal.x * 15.f, m_DataCollision.start.y + m_DataCollision.normal.y * 15.f);
+	#endif
 }
 
 void PhysicsWorld::AddBody(const Shape& colliderShape, const float x, const float y, const float mass, const float restitution, const float friction,

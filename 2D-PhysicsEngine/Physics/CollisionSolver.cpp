@@ -366,16 +366,9 @@ bool CollisionSolver::PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, C
 
 		if(poly->GetType() == Shape::Type::Polygon)
 		{
-			glm::vec2 fix = circleBody->Pos - data.end;
-
-			//if(data.depth >= radius)
-			//{
-			//	std::cout << "found it";
-			//	//fix = -(circleBody->Pos - data.end);
-			//}
 			data.start = circleBody->Pos + data.normal * radius;
 			data.normal *= -1;
-			data.end += fix * 2.f;
+			data.end += (circleBody->Pos - data.end) * 2.f;
 		}
 	}
 

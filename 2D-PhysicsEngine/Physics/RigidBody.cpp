@@ -81,18 +81,6 @@ void RigidBody::Update(const float deltaTime)
 
 void RigidBody::Draw(SDL_Renderer* pRenderer) const
 {
-	//if(colliding)
-	//{
-	//
-	//	SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);
-	//}
-	//else
-	//{
-	//	SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
-	//}
-
-	SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
-
 	if (m_ColliderShape) m_ColliderShape->DrawShape(pRenderer);
 }
 
