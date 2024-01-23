@@ -49,14 +49,14 @@ void PhysicsWorld::Draw(SDL_Renderer* pRenderer) const
     }
 }
 
-void PhysicsWorld::AddBody(const Shape& colliderShape, float x, float y, float mass, float restitution, float friction,
-	float rot)
+void PhysicsWorld::AddBody(const Shape& colliderShape, const float x, const float y, const float mass, const float restitution, const float friction,
+    const float rot)
 {
     m_RigidBodies.push_back(std::make_unique<RigidBody>(colliderShape, x, y, mass, restitution, friction, rot ));
 }
 
-void PhysicsWorld::AddBody(const Shape& colliderShape, int x, int y, float mass, float restitution, float friction,
-	float rot)
+void PhysicsWorld::AddBody(const Shape& colliderShape, const int x, const int y,  const float mass, const float restitution, const float friction,
+    const float rot)
 {
-    m_RigidBodies.push_back(std::make_unique<RigidBody>(colliderShape, x, y, mass, restitution, friction, rot));
+    AddBody(colliderShape, static_cast<float>(x), static_cast<float>(y), mass, restitution, friction, rot);
 }

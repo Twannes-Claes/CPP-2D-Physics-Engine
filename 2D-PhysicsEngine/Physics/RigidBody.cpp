@@ -141,7 +141,7 @@ void RigidBody::RK4Integration(const float deltaTime)
 	const glm::vec2 k2v = (m_Acceleration + 0.5f * k1v) * deltaTime;
 
 	const glm::vec2 k3xy = (Velocity + 0.5f * k2v) * deltaTime;
-	const glm::vec2 k3v = (m_Acceleration + 0.5f * k2v) * deltaTime;;
+	const glm::vec2 k3v = (m_Acceleration + 0.5f * k2v) * deltaTime;
 
 	const glm::vec2 k4xy = (Velocity + k3v) * deltaTime;
 	const glm::vec2 k4v = (m_Acceleration + k3v) * deltaTime;

@@ -37,11 +37,10 @@ private:
 	std::unique_ptr<Font> m_FontAmountBodies{};
 
 	//Physics Settings
-	const float m_PixelsPerMeter = 25;
 	const float m_MaxDeltaLag = 0.2f;
 	const float m_PhysicsTimeStep;
 
-	int m_IndexCurr{};
+	uint32_t m_IndexCurr{};
 
 	//FPS
 	float m_DeltaTime = 0;
@@ -66,7 +65,7 @@ private:
 	std::vector<SDL_FPoint> GenerateConvexPolygon(int numVertices, float radius) const;
 
 	void SetupRendering(const int w, const int h);
-	void SetupPhysics(const int w, const int h);
+	void SetupPhysics(const float w, const float h);
 
 	void UpdateText();
 	

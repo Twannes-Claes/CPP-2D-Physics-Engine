@@ -9,24 +9,24 @@
 #include "../glm/gtx/norm.hpp"
 #pragma warning(pop)
 
-#define ShapeType Shape::Type
+#define SHAPE_TYPE Shape::Type
 
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
 {
-	const ShapeType cacheBType = b->GetShape()->GetType();
+	const SHAPE_TYPE cacheBType = b->GetShape()->GetType();
 
 	switch (a->GetShape()->GetType())
 	{
-		case ShapeType::Circle:
+		case SHAPE_TYPE::Circle:
 		{
 			switch (cacheBType)
 			{
-				case ShapeType::Circle:
+				case SHAPE_TYPE::Circle:
 				{
 					return CollisionSolver::CircleVSCircle(a, b, data, false);
 				}
-				case ShapeType::Polygon:
-				case ShapeType::Box:
+				case SHAPE_TYPE::Polygon:
+				case SHAPE_TYPE::Box:
 				{
 					return CollisionSolver::PolyVsCircle(b, a, data);
 				}
@@ -34,17 +34,17 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 			break;
 		}
 
-		case ShapeType::Polygon:
-		case ShapeType::Box:
+		case SHAPE_TYPE::Polygon:
+		case SHAPE_TYPE::Box:
 		{
 			switch (cacheBType)
 			{
-				case ShapeType::Circle:
+				case SHAPE_TYPE::Circle:
 				{
 					return CollisionSolver::PolyVsCircle(a, b, data);
 				}
-				case ShapeType::Polygon:
-				case ShapeType::Box:
+				case SHAPE_TYPE::Polygon:
+				case SHAPE_TYPE::Box:
 				{
 					return CollisionSolver::PolyVSPoly(a, b, data);
 				}

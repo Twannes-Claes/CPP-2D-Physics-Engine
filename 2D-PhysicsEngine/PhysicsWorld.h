@@ -9,7 +9,7 @@ struct SDL_Renderer;
 class PhysicsWorld
 {
 public:
-	explicit PhysicsWorld(const glm::vec2& gravity = glm::vec2{ 0.f, 9.81f }, const int pixelsPerMeter = 25) :Gravity(gravity), m_PixelsPerMeter(pixelsPerMeter) {}
+	explicit PhysicsWorld(const glm::vec2& gravity = glm::vec2{ 0.f, 9.81f }, const uint32_t pixelsPerMeter = 25) :Gravity(gravity), m_PixelsPerMeter(pixelsPerMeter) {}
 	~PhysicsWorld();
 
 	PhysicsWorld(const PhysicsWorld& other) = delete;
@@ -36,7 +36,7 @@ private:
 
 	CollisionSolver::CollisionData m_DataCollision{};
 
-	const int m_PixelsPerMeter{};
+	const uint32_t m_PixelsPerMeter{};
 };
 
 

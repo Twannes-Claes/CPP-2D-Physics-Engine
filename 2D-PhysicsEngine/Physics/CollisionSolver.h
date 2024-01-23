@@ -4,7 +4,7 @@
 class Polygon;
 class RigidBody;
 
-class CollisionSolver
+class CollisionSolver final
 {
 public:
 
@@ -38,8 +38,7 @@ public:
 
 	static bool IsColliding(RigidBody* a, RigidBody* b, CollisionData& data);
 
-
-	inline static float Cross(const glm::vec2& a, const glm::vec2& b) { return (a.x * b.y) - (a.y * b.x); }
+	static float Cross(const glm::vec2& a, const glm::vec2& b) { return (a.x * b.y) - (a.y * b.x); }
 
 private:
 
@@ -54,6 +53,5 @@ private:
 	static void AddImpulses(const CollisionData& data);
 
 	static void FindLeastSeperation(const Polygon* a, const Polygon* b, CollisionDataPoly& data);
-
 };
 

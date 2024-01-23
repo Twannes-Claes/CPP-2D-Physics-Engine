@@ -23,7 +23,7 @@ PhysicsEngine::PhysicsEngine(const int windowWidth, const int windowHeight, cons
 {
     SetupRendering(windowWidth, windowHeight);
 
-    SetupPhysics(windowWidth, windowHeight);
+    SetupPhysics(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 }
 
 //Default assignment is needed in CPP for unique pointers
@@ -38,7 +38,6 @@ void PhysicsEngine::Run()
     //Get the start time
     auto startTime = std::chrono::high_resolution_clock::now();
     auto currTime = startTime;
-    float delta{};
 
     //If quit is true exit the game loop
     while (!quitLoop)
@@ -73,9 +72,8 @@ void PhysicsEngine::Run()
                         default:
                             break;
                    }
-	           	   break;
                }
-               break;
+	       	   break;
 
 	           case SDL_MOUSEBUTTONDOWN:
 		       {
@@ -139,7 +137,7 @@ void PhysicsEngine::Run()
 
         //Calculate elapsed seconds
         currTime = std::chrono::high_resolution_clock::now();
-        delta = std::chrono::duration<float>(currTime - startTime).count();
+        const float delta = std::chrono::duration<float>(currTime - startTime).count();
 
         startTime = currTime;
         m_DeltaTime = delta;
@@ -270,7 +268,7 @@ void PhysicsEngine::SetupRendering(const int w, const int h)
     m_FontAmountBodies = std::make_unique<Font>(fontName, 24, SDL_Color{ 255, 255, 0, 255 }, 650, 10, m_pRenderer);
 }
 
-void PhysicsEngine::SetupPhysics(const int w, const int h)
+void PhysicsEngine::SetupPhysics(const float w, const float h)
 {
     m_PhysicsWorld = std::make_unique<PhysicsWorld>();
 
