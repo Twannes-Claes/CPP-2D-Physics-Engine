@@ -5,7 +5,7 @@
 Box::Box(const float w, const float h) :Box(glm::vec2{w,h}) {}
 
 Box::Box(const glm::vec2& dimensions):
-Polygon(GetBoxVertices(dimensions), glm::length(dimensions)),
+Polygon(GetBoxVertices(dimensions), length(dimensions)),
 m_Dimensions(dimensions)
 {}
 

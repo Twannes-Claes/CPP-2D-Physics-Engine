@@ -32,7 +32,7 @@ float Polygon::GetMomentOfInteria(const float) const
 
         const float crossDistancePerpendicular = abs(CollisionSolver::Cross(a, b));
 
-        totalArea += crossDistancePerpendicular * (glm::dot(a, a) + glm::dot(b, b) + glm::dot(a, b));
+        totalArea += crossDistancePerpendicular * (dot(a, a) + dot(b, b) + dot(a, b));
         totalMass += crossDistancePerpendicular;
     }
 
@@ -53,7 +53,7 @@ glm::vec2 Polygon::GetEdge(const uint32_t index) const
 void Polygon::UpdateVertices()
 {
     //Precompute rotation matrix
-    const glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), m_RigidBodyRot, glm::vec3(0.0f, 0.0f, 1.0f));
+    const glm::mat4 rotationMatrix = rotate(glm::mat4(1.0f), m_RigidBodyRot, glm::vec3(0.0f, 0.0f, 1.0f));
 
     //Convert from local to world space
     for (int i{}; i < static_cast<int>(m_Vertices.size()); ++i)

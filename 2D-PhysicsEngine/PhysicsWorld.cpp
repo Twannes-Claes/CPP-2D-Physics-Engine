@@ -3,7 +3,7 @@
 
 PhysicsWorld::~PhysicsWorld() = default;
 
-//TODO Spatial partiationing, Constraints, Multiple Contact points, Fix Circle vs Poly inside bug
+//TODO Spatial partiationing, Constraints, Multiple Contact points, Fix Circle vs Poly inside bug, disconnect rendering from physics
 
 void PhysicsWorld::Update(const float timeStep)
 {
@@ -47,6 +47,16 @@ void PhysicsWorld::Draw(SDL_Renderer* pRenderer) const
     {
         body->Draw(pRenderer);
     }
+
+    SDL_SetRenderDrawColor(pRenderer, 0, 0, 255, 255);
+    
+    const SDL_FRect startPoint = SDL_FRect{ m_DataCollision.start.x - 2.f, m_DataCollision.start.y - 2.f, 4.f, 4.f };
+    const SDL_FRect endPoint = SDL_FRect{ m_DataCollision.end.x - 2.f, m_DataCollision.end.y - 2.f, 4.f, 4.f };
+    
+    SDL_RenderDrawRectF(pRenderer, &startPoint);
+    SDL_RenderDrawRectF(pRenderer, &endPoint);
+    
+    SDL_RenderDrawLineF(pRenderer, m_DataCollision.start.x, m_DataCollision.start.y, m_DataCollision.start.x + m_DataCollision.normal.x * 15.f, m_DataCollision.start.y + m_DataCollision.normal.y * 15.f);
 }
 
 void PhysicsWorld::AddBody(const Shape& colliderShape, const float x, const float y, const float mass, const float restitution, const float friction,

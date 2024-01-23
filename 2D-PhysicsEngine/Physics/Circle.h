@@ -10,13 +10,14 @@ public:
 	virtual ~Circle() override = default;
 
 	virtual void UpdateVertices() override {}
+
 	virtual void DrawShape(SDL_Renderer* pRenderer) override;
 
 	virtual std::unique_ptr<Shape> Clone() const override;
 
 	virtual Type GetType()  const override { return Type::Circle; }
 
-	float GetMomentOfInteria(const float mass) const override;
+	float GetMomentOfInteria(float mass) const override;
 
 	Circle(const Circle& other) = delete;
 	Circle(Circle&& other) = delete;

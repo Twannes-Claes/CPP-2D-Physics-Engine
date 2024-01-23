@@ -11,7 +11,7 @@ class Font
 {
 public:
 
-	Font(const char* fontName, const uint32_t fontSize, const SDL_Color color, const int x, const int y, SDL_Renderer* pRenderer);
+	Font(const char* fontName, uint32_t fontSize, SDL_Color color, int x, int y, SDL_Renderer* pRenderer);
 	~Font();
 
 	Font(const Font& other) = delete;
@@ -20,7 +20,7 @@ public:
 	Font& operator=(Font&& other) = delete;
 
 	void SetText(const char* text);
-	void SetColor(const SDL_Color color);
+	void SetColor(SDL_Color color);
 
 	void Draw() const;
 

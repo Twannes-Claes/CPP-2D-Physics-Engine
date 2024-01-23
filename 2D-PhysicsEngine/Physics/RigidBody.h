@@ -31,7 +31,7 @@ public:
 	void ClearForces() { m_AccumulatedForce = glm::vec2{}; }
 	void ClearTorque() { m_AccumulatedTorque = 0; }
 
-	void Update(const float deltaTime);
+	void Update(float deltaTime);
 	void Draw(SDL_Renderer* pRenderer) const;
 
 	Shape* GetShape() const { return m_ColliderShape.get(); }
@@ -77,8 +77,8 @@ private:
 
 	static const float m_PI2;
 
-	void EulerIntegration(const float deltaTime);
-	void VerletIntegration(const float deltaTime);
-	void RK4Integration(const float deltaTime);
+	void EulerIntegration(float deltaTime);
+	void VerletIntegration(float deltaTime);
+	void RK4Integration(float deltaTime);
 };
 

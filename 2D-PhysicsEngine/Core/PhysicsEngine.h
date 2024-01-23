@@ -46,7 +46,6 @@ private:
 	float m_DeltaTime = 0;
 	float m_DeltaLag = 0;
 	float m_FrameCount = 0;
-	float m_FixedTotalTime = 0;
 
 	float m_fpsTimer = 0;
 	float m_DurationFixed = 0;
@@ -64,9 +63,8 @@ private:
 	int Random(int min, int max) const;
 	std::vector<SDL_FPoint> GenerateConvexPolygon(int numVertices, float radius) const;
 
-	void SetupRendering(const int w, const int h);
-	void SetupPhysics(const float w, const float h);
+	void SetupRendering(int w, int h);
+	void SetupPhysics(float w, float h);
 
 	void UpdateText();
-	
 };

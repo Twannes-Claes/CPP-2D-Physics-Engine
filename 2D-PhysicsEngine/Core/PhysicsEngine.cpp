@@ -153,7 +153,8 @@ void PhysicsEngine::Run()
         }
 
 		#ifdef MOVE_OBJECTS_MOUSE
-        if (const auto body = m_PhysicsWorld->GetBodyAtIndex(m_IndexCurr); !body->IsStatic())
+        const auto body = m_PhysicsWorld->GetBodyAtIndex(m_IndexCurr);
+        if (!body->IsStatic())
         {
             SDL_GetMouseState(&m_MouseX, &m_MouseY);
 
@@ -202,16 +203,6 @@ void PhysicsEngine::Draw() const
     SDL_RenderClear(m_pRenderer);
 
     m_PhysicsWorld->Draw(m_pRenderer);
-
-    //SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
-    //
-    //const SDL_FRect startPoint = SDL_FRect{ m_DataCollision.start.x - 2.f, m_DataCollision.start.y - 2.f, 4.f, 4.f };
-    //const SDL_FRect endPoint = SDL_FRect{ m_DataCollision.end.x - 2.f, m_DataCollision.end.y - 2.f, 4.f, 4.f };
-    //
-    //SDL_RenderDrawRectF(m_pRenderer, &startPoint);
-    //SDL_RenderDrawRectF(m_pRenderer, &endPoint);
-    //
-    //SDL_RenderDrawLineF(m_pRenderer, m_DataCollision.start.x, m_DataCollision.start.y, m_DataCollision.start.x + m_DataCollision.normal.x * 15.f, m_DataCollision.start.y + m_DataCollision.normal.y * 15.f);
 
     m_FontFPS->Draw();
     m_FontFPSFixed->Draw();
@@ -270,6 +261,7 @@ void PhysicsEngine::SetupRendering(const int w, const int h)
 
 void PhysicsEngine::SetupPhysics(const float w, const float h)
 {
+    //m_PhysicsWorld = std::make_unique<PhysicsWorld>(glm::vec2{0,0}, 0);
     m_PhysicsWorld = std::make_unique<PhysicsWorld>();
 
     //Static circle in the middle

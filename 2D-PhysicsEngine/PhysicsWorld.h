@@ -9,6 +9,7 @@ struct SDL_Renderer;
 class PhysicsWorld
 {
 public:
+
 	explicit PhysicsWorld(const glm::vec2& gravity = glm::vec2{ 0.f, 9.81f }, const uint32_t pixelsPerMeter = 25) :Gravity(gravity), m_PixelsPerMeter(pixelsPerMeter) {}
 	~PhysicsWorld();
 
@@ -17,7 +18,7 @@ public:
 	PhysicsWorld& operator=(const PhysicsWorld& other) = delete;
 	PhysicsWorld& operator=(PhysicsWorld&& other) = delete;
 
-	void Update(const float timeStep);
+	void Update(float timeStep);
 	void Draw(SDL_Renderer* pRenderer) const;
 
 	void AddBody(const Shape& colliderShape, float x, float y, float mass, float restitution = 0.5f, float friction = 0.5f, float rot = 0.f);

@@ -33,6 +33,7 @@ public:
 	{
 		glm::vec2 seperationAxis{};
 		glm::vec2 projectedPoint{};
+
 		float seperationLength{};
 	};
 

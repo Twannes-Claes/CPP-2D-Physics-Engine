@@ -11,6 +11,8 @@
 
 #define SHAPE_TYPE Shape::Type
 
+//#define DEBUG_DETECTION
+
 bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& data)
 {
 	const SHAPE_TYPE cacheBType = b->GetShape()->GetType();
@@ -23,12 +25,12 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 			{
 				case SHAPE_TYPE::Circle:
 				{
-					return CollisionSolver::CircleVSCircle(a, b, data, false);
+					return CircleVSCircle(a, b, data, false);
 				}
 				case SHAPE_TYPE::Polygon:
 				case SHAPE_TYPE::Box:
 				{
-					return CollisionSolver::PolyVsCircle(b, a, data);
+					return PolyVsCircle(b, a, data);
 				}
 			}
 			break;
@@ -41,12 +43,12 @@ bool CollisionSolver::IsColliding(RigidBody* a, RigidBody* b, CollisionData& dat
 			{
 				case SHAPE_TYPE::Circle:
 				{
-					return CollisionSolver::PolyVsCircle(a, b, data);
+					return PolyVsCircle(a, b, data);
 				}
 				case SHAPE_TYPE::Polygon:
 				case SHAPE_TYPE::Box:
 				{
-					return CollisionSolver::PolyVSPoly(a, b, data);
+					return PolyVSPoly(a, b, data);
 				}
 			}
 		}
@@ -62,7 +64,7 @@ bool CollisionSolver::CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& 
 	const Shape* bCircleShape = b->GetShape();
 
 	//Get the squared distance between the circles
-	const float distance = glm::distance2(a->Pos, b->Pos);
+	const float distance = distance2(a->Pos, b->Pos);
 
 	//Sum the radius
 	const float circleRadiusSum = aCircleShape->GetBoundingRadius() + bCircleShape->GetBoundingRadius();
@@ -85,7 +87,7 @@ bool CollisionSolver::CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& 
 
 	////Projection method
 	//Normal pointing from a to b
-	data.normal = glm::normalize(glm::vec2{ b->Pos - a->Pos });
+	data.normal = normalize(glm::vec2{ b->Pos - a->Pos });
 	
 	//Get start and end location of collision between a && b
 	data.start = b->Pos - (data.normal * bCircleShape->GetBoundingRadius());
@@ -93,10 +95,12 @@ bool CollisionSolver::CircleVSCircle(RigidBody* a, RigidBody* b, CollisionData& 
 	
 	//Get distance between start and end
 	data.depth = glm::distance(data.end, data.start);
-	
+
+	#ifndef DEBUG_DETECTION
 	PositionalCorrection(data);
 
 	AddImpulses(data);
+	#endif
 
 	return true;
 }
@@ -130,7 +134,7 @@ bool CollisionSolver::PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data
 	if(aInfo.seperationLength > bInfo.seperationLength)
 	{
 		data.depth = -aInfo.seperationLength;
-		data.normal = glm::normalize(glm::vec2{ -aInfo.seperationAxis.y, aInfo.seperationAxis.x });
+		data.normal = normalize(glm::vec2{ -aInfo.seperationAxis.y, aInfo.seperationAxis.x });
 	
 		data.start = aInfo.projectedPoint;
 		data.end = data.start + data.normal * data.depth;
@@ -139,15 +143,17 @@ bool CollisionSolver::PolyVSPoly(RigidBody* a, RigidBody* b, CollisionData& data
 	{
 		data.depth = -bInfo.seperationLength;
 		//data.normal = -glm::normalize(glm::vec2{ -bInfo.seperationAxis.y, bInfo.seperationAxis.x });
-		data.normal = glm::normalize(glm::vec2{ bInfo.seperationAxis.y, -bInfo.seperationAxis.x });
+		data.normal = normalize(glm::vec2{ bInfo.seperationAxis.y, -bInfo.seperationAxis.x });
 	
 		data.start = bInfo.projectedPoint - data.normal * data.depth;
 		data.end = bInfo.projectedPoint;
 	}
-	
+
+	#ifndef DEBUG_DETECTION
 	PositionalCorrection(data);
 	
 	AddImpulses(data);
+	#endif
 
 	return true;
 }
@@ -171,7 +177,7 @@ void CollisionSolver::FindLeastSeperation(const Polygon* a, const Polygon* b, Co
 		const glm::vec2 edge = a->GetEdge(i);
 
 		// Calculate the normal by swapping x and inverting y
-		const glm::vec2 n = glm::normalize(glm::vec2{ -edge.y, edge.x });
+		const glm::vec2 n = normalize(glm::vec2{ -edge.y, edge.x });
 
 		float minSeperation = FLT_MAX;
 		glm::vec2 bestProjectedPoint{};
@@ -181,7 +187,7 @@ void CollisionSolver::FindLeastSeperation(const Polygon* a, const Polygon* b, Co
 			//Get the vertice
 			const glm::vec2 vB = { verticesB[j].x, verticesB[j].y };
 			//get the least seperation of the vertices
-			const float projectionLength = glm::dot(vB - vA, n);
+			const float projectionLength = dot(vB - vA, n);
 			if (projectionLength < minSeperation)
 			{
 				minSeperation = projectionLength;
@@ -226,13 +232,13 @@ bool CollisionSolver::PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, C
 		//Calculate the edge and get the normal
 		const glm::vec2 edge = poly->GetEdge(i);
 		//DONT FORGEOT TO FKING NORMALIZE YOUR FUCKING NORMALS TWANNES YOU RETARD 2 HOURS OF DEBUGGING JEEEZUS
-		const glm::vec2 n = glm::normalize(glm::vec2{ -edge.y, edge.x });
+		const glm::vec2 n = normalize(glm::vec2{ -edge.y, edge.x });
 
 		//Get the vector between the vertice and the circle
 		const glm::vec2 verticeToCircle = circleBody->Pos - currV;
 
 		//Project the vector on the normal of the edge to find where it is
-		const float dotProjection = glm::dot(verticeToCircle, n);
+		const float dotProjection = dot(verticeToCircle, n);
 
 		//If projection is larger than zero then it means that the circle is outside the polygon
 		if(dotProjection > 0)
@@ -263,18 +269,16 @@ bool CollisionSolver::PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, C
 	if(isCircleOutsidePoly)
 	{
 		//Check the three regions
-		
 		//1. Left of current vertex
-
 		//again vector from circle to vertex but this time from the found min vertex
 		const glm::vec2 vecCircleToVertice = circleBody->Pos - minCurrV;
 		const glm::vec2 edge = minNextV - minCurrV;
 
 		//If projection is less than zero it means it is left of the curr vertex
-		if (glm::dot(vecCircleToVertice, edge) < 0)
+		if (dot(vecCircleToVertice, edge) < 0)
 		{
 			//Now check if circle collides with currVertex, with distnace check
-			const float distance = glm::length(vecCircleToVertice);
+			const float distance = length(vecCircleToVertice);
 			if (distance > radius) return false;
 
 			//Fill in data
@@ -282,7 +286,7 @@ bool CollisionSolver::PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, C
 			data.b = circleBody;
 
 			data.depth = radius - distance;
-			data.normal = glm::normalize(vecCircleToVertice);
+			data.normal = normalize(vecCircleToVertice);
 
 			data.start = circleBody->Pos + -data.normal * radius;
 			data.end = data.start + data.normal * data.depth;
@@ -297,10 +301,10 @@ bool CollisionSolver::PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, C
 			const glm::vec2 edge2 = minCurrV - minNextV;
 
 			//If projection is less than zero it means it is right of the next vertex
-			if (glm::dot(vecCircleToVertice2, edge2) < 0)
+			if (dot(vecCircleToVertice2, edge2) < 0)
 			{
 				//Now check if circle collides with nextVertex, with distnace check
-				const float distance = glm::length(vecCircleToVertice2);
+				const float distance = length(vecCircleToVertice2);
 
 				if (distance > radius) return false;
 
@@ -309,7 +313,7 @@ bool CollisionSolver::PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, C
 				data.b = circleBody;
 
 				data.depth = radius - distance;
-				data.normal = glm::normalize(vecCircleToVertice2);
+				data.normal = normalize(vecCircleToVertice2);
 
 				data.start = circleBody->Pos + -data.normal * radius;
 				data.end = data.start + data.normal * data.depth;
@@ -331,7 +335,7 @@ bool CollisionSolver::PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, C
 
 				data.depth = radius - distanceToEdge;
 				//Get the normal of the edge
-				const glm::vec2 edgeNormalized = glm::normalize(glm::vec2{ minNextV - minCurrV });
+				const glm::vec2 edgeNormalized = normalize(glm::vec2{ minNextV - minCurrV });
 				data.normal = glm::vec2{ -edgeNormalized.y, edgeNormalized.x };
 
 				if (poly->GetType() == Shape::Type::Polygon)
@@ -353,7 +357,7 @@ bool CollisionSolver::PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, C
 
 		data.depth = radius - distanceToEdge;
 		//Get the normal of the edge
-		const glm::vec2 edgeNormalized = glm::normalize(glm::vec2{ minNextV - minCurrV });
+		const glm::vec2 edgeNormalized = normalize(glm::vec2{ minNextV - minCurrV });
 		data.normal = glm::vec2{ -edgeNormalized.y, edgeNormalized.x };
 
 		data.start = circleBody->Pos - data.normal * radius;
@@ -369,14 +373,17 @@ bool CollisionSolver::PolyVsCircle(RigidBody* polyBody, RigidBody* circleBody, C
 			//	std::cout << "found it";
 			//	//fix = -(circleBody->Pos - data.end);
 			//}
-
+			data.start = circleBody->Pos + data.normal * radius;
+			data.normal *= -1;
 			data.end += fix * 2.f;
 		}
 	}
 
+	#ifndef DEBUG_DETECTION
 	PositionalCorrection(data);
 	
 	AddImpulses(data);
+	#endif
 
 	return true;
 }
@@ -433,7 +440,7 @@ void CollisionSolver::AddImpulses(const CollisionData& data)
 	//const float relVelDotNormal = glm::dot(va - vb, data.normal);
 	const glm::vec2 relVel = relVelA - relVelB;
 
-	const float relVelDotNormal = glm::dot(relVel, data.normal);
+	const float relVelDotNormal = dot(relVel, data.normal);
 
 	//Formula https://gamedev.stackexchange.com/questions/157537/impulse-resolution-for-purely-rotational-collisions-relative-linear-velocity
 	//Calculate the amount of impulse(scalar)
@@ -441,7 +448,7 @@ void CollisionSolver::AddImpulses(const CollisionData& data)
 
 	//Now rotational impulse along tangent
 	const glm::vec2 tangent = glm::vec2{ -data.normal.y, data.normal.x };
-	const float relVelDotTangent = glm::dot(relVel, tangent);
+	const float relVelDotTangent = dot(relVel, tangent);
 
 	const float impulseTangentForce = f * -(1 + e) * relVelDotTangent / ((data.a->InvMass + data.b->InvMass) + ((Cross(contactDirA, tangent) * Cross(contactDirA, tangent)) * data.a->InvI) + ((Cross(contactDirB, tangent) * Cross(contactDirB, tangent)) * data.b->InvI));
 
