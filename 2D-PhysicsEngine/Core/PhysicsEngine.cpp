@@ -282,17 +282,18 @@ void PhysicsEngine::SetupPhysics(const float w, const float h)
 
 void PhysicsEngine::UpdateText()
 {
-    const std::string fpsText = "fps: " + std::to_string(static_cast<int>(m_FrameCount / m_fpsTimer));
-    const std::string milliText = "ms: " + std::to_string(m_DurationFixed / m_FixedLoopAmount);
-    const std::string amountText = "amount: " + std::to_string(m_PhysicsWorld->AmountBodies());
+	const std::string fpsText = "fps: " + std::to_string(static_cast<int>(m_FrameCount / m_fpsTimer));
+	const std::string milliText = "ms: " + std::to_string(m_DurationFixed / m_FixedLoopAmount);
+	const std::string amountText = "amount: " + std::to_string(m_PhysicsWorld->AmountBodies());
 
-    m_FontFPS->SetText(fpsText.c_str());
-    m_FontFPSFixed->SetText(milliText.c_str());
-    m_FontAmountBodies->SetText(amountText.c_str());
+	m_FontFPS->SetText(fpsText.c_str());
+	m_FontFPSFixed->SetText(milliText.c_str());
+	m_FontAmountBodies->SetText(amountText.c_str());
 
-    //Reset timer
-    m_FrameCount = 0;
-    m_fpsTimer = 0;
+	//Reset timer
+	m_FrameCount = 0;
+	m_fpsTimer = 0;
 
-    m_DurationFixed = 0;
-    m_FixedLoopAmount = 0;
+	m_DurationFixed = 0;
+	m_FixedLoopAmount = 0;
+}
