@@ -138,11 +138,12 @@ void PhysicsEngine::Run()
         //Calculate elapsed seconds
         currTime = std::chrono::high_resolution_clock::now();
         const float delta = std::chrono::duration<float>(currTime - startTime).count();
-
         startTime = currTime;
+
         m_DeltaTime = delta;
         m_DeltaLag += delta;
 
+        //Average FPS
         m_fpsTimer += delta;
         ++m_FrameCount;
 
@@ -189,6 +190,7 @@ void PhysicsEngine::FixedUpdate()
 
         m_DeltaLag -= m_PhysicsTimeStep;
 
+        //Info to calculate elapsed milliseconds
         const auto endFixed = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch().count();
 
         m_DurationFixed += static_cast<float>(endFixed - startFixed) * 0.001f;
@@ -294,4 +296,3 @@ void PhysicsEngine::UpdateText()
 
     m_DurationFixed = 0;
     m_FixedLoopAmount = 0;
-}
